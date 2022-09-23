@@ -1,0 +1,4 @@
+export const GenreList = {
+    POP:'POP',HIPHOP:'HIPHOP',ELECTRONIC:'ELECTRONIC',
+    ROCK:'ROCK',KPOP:'KPOP'
+}

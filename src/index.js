@@ -15,6 +15,7 @@ const GlobalStyle = createGlobalStyle`
 	--body-text:11.5px;
 	--body-icon:22.5px;
 	--body-music-info:22.5px;
+	--body-form-text:14.5px;
 
 	--tablet-header-main:25.5px;
     --tablet-header-menu:18.5px;
@@ -70,6 +71,10 @@ table {
 }
 input:focus {outline: none;} 
 button{
+	outline:none;
+	border:none;
+}
+select{
 	outline:none;
 	border:none;
 }
