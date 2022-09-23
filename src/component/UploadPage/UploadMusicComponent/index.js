@@ -2,6 +2,7 @@ import React, { memo, useState, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload, faCloudUpload } from '@fortawesome/free-solid-svg-icons';
+import SingleMusicComponent from './SingleMusicComponent';
 
 const UploadMusicBox = styled.div`
     width:42.5vw;height:42.5vw;
@@ -13,13 +14,16 @@ const UploadMusicBox = styled.div`
     border-radius:12.5px;
     .input-container{
         width:100%;height:48.5%;
+        &.on{
+            height:38.5%;
+        }
         .input-wrapper{
             width:100%;height:100%;
             display:flex;
             align-items:center;
             .input-box{
                 margin:0 auto;
-                width:32.5vw;height:65.5%;
+                width:38.5vw;height:65.5%;
                 border-radius:10.5px;
                 border:3.5px dashed #fff;
                 display:flex;
@@ -81,12 +85,42 @@ const UploadMusicBox = styled.div`
     }
     .music-info-container{
         width:100%;height:48.5%;
+        &.on{
+            height:58.5%;
+        }
         .music-info-wrapper{
             width:100%;height:100%;
             .music-info-box{
-                width:32.5vw;height:75.5%;
+                width:38.5vw;height:75.5%;
                 border-radius:10.5px;
                 margin:0 auto;
+                &.on{
+                    height:100%;
+                }
+                .added-playlist-container{
+                    width:100%;height:100%;
+                    .added-playlist-wrapper{
+                        width:100%;height:100%;
+                        padding:10.5px;
+                        box-sizing:border-box;
+                        overflow:auto;
+                        border-radius:10.5px;
+                        background-color:#000;
+                        &::-webkit-scrollbar{
+                            width:10px;
+                        }
+                        &::-webkit-scrollbar-track{
+                            width:10px;
+                            background-color:#000;
+                            border-radius:4.5px;
+                        }
+                        &::-webkit-scrollbar-thumb{
+                            border-radius:4.5px;
+                            background:#454545;
+                            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+                        }
+                    }
+                }
                 .before-uplaod{
                     width:100%;height:100%;
                     .upload-icon{
@@ -114,6 +148,63 @@ const UploadMusicBox = styled.div`
                 }
             }
             
+        }
+    }
+    @media screen and (max-width:1405px){
+        width: 52.5vw;height: 52.5vw;
+        @media screen and (max-width:1405px){
+            .input-container{
+                .input-wrapper{
+                    .input-box{
+                        width:48.5vw;
+                    }
+                }
+            }
+            .music-info-container{
+                .music-info-wrapper{
+                    .music-info-box{
+                        width:48.5vw;
+                    }
+                }
+            }
+        }
+    }
+    @media screen and (max-width:940px){
+        width: 85.5vw;height: 90%;
+        @media screen and (max-width:1405px){
+            .input-container{
+                .input-wrapper{
+                    .input-box{
+                        width:58.5vw;
+                    }
+                }
+            }
+            .music-info-container{
+                .music-info-wrapper{
+                    .music-info-box{
+                        width:58.5vw;
+                    }
+                }
+            }
+        }
+    }
+    @media screen and (max-width:770px){
+        width: 85.5vw;height: 90%;
+        @media screen and (max-width:1405px){
+            .input-container{
+                .input-wrapper{
+                    .input-box{
+                        width:78.5vw;
+                    }
+                }
+            }
+            .music-info-container{
+                .music-info-wrapper{
+                    .music-info-box{
+                        width:78.5vw;
+                    }
+                }
+            }
         }
     }
 `;
@@ -193,8 +284,10 @@ const onDropFiles = async (dataTransfer, sizeLimit, sizeLimitMB) => {
 const UploadMusicComponent = memo(() => {
     const [musicFileArr, setMusicFileArr] = useState(null);
     const [isDraggedOver, setIsDraggedOver] = useState(false);
+    const [tempFlag,setTempFlag] = useState(true);
     const sizeLimitNB = useRef(100);
     const sizeLimit = useRef(sizeLimitNB.current * 1024 * 1024);
+    
     const onDragOver = useCallback((evt) => {
         evt.preventDefault();
         setIsDraggedOver(true);
@@ -268,7 +361,7 @@ const UploadMusicComponent = memo(() => {
 
     return (
         <UploadMusicBox>
-            <div className="input-container">
+            <div className={`${tempFlag?'input-container on':'input-container'}`}>
                 <div className="input-wrapper">
                     <label
                         htmlFor="fileInputElement"
@@ -303,11 +396,12 @@ const UploadMusicComponent = memo(() => {
                     </label>
                 </div>
             </div>
-            <div className="music-info-container">
+            <div className={`${tempFlag?"music-info-container on":"music-info-container on"}`}>
                 <div className="music-info-wrapper">
-                    <div className="music-info-box">
+                    <div className={`${tempFlag?'music-info-box on':'music-info-box'}`}>
                         {
-                            (!musicFileArr || musicFileArr.length === 0) &&
+                            /* (!musicFileArr || musicFileArr.length === 0) */ 
+                            (!tempFlag)?
                             (
                                 <div className='before-uplaod'>
                                     <p className="upload-icon">
@@ -320,6 +414,12 @@ const UploadMusicComponent = memo(() => {
                                         <p className="sub-text">
                                             Start Uploading Your Music Right Now!
                                         </p>
+                                    </div>
+                                </div>
+                            ):(
+                                <div className="added-playlist-container">
+                                    <div className="added-playlist-wrapper">
+                                        <SingleMusicComponent/>
                                     </div>
                                 </div>
                             )
