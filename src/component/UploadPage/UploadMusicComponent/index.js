@@ -194,7 +194,16 @@ const UploadMusicBox = styled.div`
             .input-container{
                 .input-wrapper{
                     .input-box{
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
                         width:78.5vw;
+                        .input-drag-box{
+                            width:25.5vw;
+                        }
+                        .label-box{
+                            width:19.5vw;
+                        }
                     }
                 }
             }
@@ -207,6 +216,71 @@ const UploadMusicBox = styled.div`
             }
         }
     }
+    @media screen and (max-width:650px){
+        width: 95.5vw;
+        .music-info-container{
+            width:100%;height:62.5%;
+            &.on{
+                height:62.5%;
+            }
+            .music-info-wrapper{
+                width:100%;height:100%;
+                .music-info-box{
+                    width:87.5vw;
+                }
+            }
+        }
+        .input-container{
+            width:100%;height:48.5%;
+            &.on{
+                height:28.5%;
+            }
+            .input-wrapper{
+                width:100%;height:100%;
+                display:flex;
+                align-items:center;
+                .input-box{
+                    width:87.5vw;
+                }
+            }
+        }
+    }
+    @media screen and (max-width:650px){
+        width: 95.5vw;
+        .music-info-container{
+            width:100%;height:62.5%;
+            &.on{
+                height:62.5%;
+            }
+            .music-info-wrapper{
+                width:100%;height:100%;
+                .music-info-box{
+                    width:87.5vw;
+                }
+            }
+        }
+        .input-container{
+            width:100%;height:48.5%;
+            &.on{
+                height:28.5%;
+            }
+            .input-wrapper{
+                width:100%;height:100%;
+                display:flex;
+                align-items:center;
+                .input-box{
+                    width:87.5vw;
+                    .input-drag-box{
+                        width:85.5vw;
+                    }
+                    .label-box{
+                        width:85.5vw;
+                    }
+                }
+            }
+        }
+    }
+    
 `;
 
 const convertFileSizeIntoStr = (fileObj, size, sizeInMeasurement) => {

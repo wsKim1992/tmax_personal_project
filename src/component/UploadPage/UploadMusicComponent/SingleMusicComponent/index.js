@@ -308,6 +308,27 @@ const UploadedMusicBox = styled.div`
             }
         }
     }
+
+    @media screen and (max-width:510px){
+        .music-upload-form-box{
+            .music-upload-form{
+                form{
+                    width:100%;height:100%;
+                    display:flex;
+                    flex-direction:row;
+                    align-items:center;
+                    justify-content:space-between;
+                    .upload-image-form-box{
+                        width:100px;height:100px;
+                    }
+                    .upload-text-info-box{
+                        width:calc(100% - 125px);
+                    }
+                }
+            }
+        }
+        
+    }
     
 `;
 
