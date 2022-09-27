@@ -10,10 +10,8 @@ const EntireContainer = styled.div`
 const EntireWrapper = styled.div`
     width:100%;height:100%;
     background-color:${props=>props.theme.bodyBgColor};
-    perspective:1200px;
     position:relative;
     .image-box{
-        transform-style:preserve-3d;
         width:100%;height:100%;
         background-image:
                 linear-gradient(215deg,rgba(0,0,0,0),${props=>props.theme.bodyBgColor}),
@@ -25,12 +23,14 @@ const EntireWrapper = styled.div`
         top:20%;left:35.5%;
         z-index:2;
         transform-style:preserve-3d;
-        perspective:550px;
+        perspective:300px;
         >span{
+            display:inline-block;
             font-size:55.5px;
             color:#000;
-            transform:translate3d(0, 0, 100px);
-            transition:0.5s all;
+            scale:0;
+            opacity:0;
+            transform:translateZ(-120px);
         }
     }
 `;
@@ -58,7 +58,9 @@ const FirstPageComponent = memo(()=>{
             const textAcitonArr = Array.from(singleLiteral).map((v,i)=>(
                 gsap.to(v,{
                     delay:imageAnimationDuration,
-                    duration:Math.random()*3.5,
+                    opacity:1,
+                    scale:1,
+                    duration:Math.random()*i*0.5,
                     z:0,
                 })
             ))
