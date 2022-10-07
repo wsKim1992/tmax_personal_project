@@ -11,7 +11,6 @@ class MusicPlayerStoreClass{
     constructor(){
         makeObservable(this,{
             audioObj:observable,
-            albumImage:observable,
             audioContext:observable,
             musicPlayingNow:observable,
             analyser:observable,
