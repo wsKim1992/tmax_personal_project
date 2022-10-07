@@ -5,8 +5,8 @@ import AlbumCover from '../../component/MusicPlayer/AlbumCover';
 import PlayListComponent from '../../component/MusicPlayer/PlayListComponent';
 import { observer } from 'mobx-react-lite';
 import MusicPlayerStore from '../../store/MusicPlayerStore';
-import SampleMusic from '../../static/sample_music/Jim Yosef - Speed.mp3';
-import SampleAlbumCover from '../../static/image/sample/album_cover.jpg';
+/* import SampleMusic from '../../static/sample_music/Jim Yosef - Speed.mp3';
+import SampleAlbumCover from '../../static/image/sample/album_cover.jpg'; */
 
 const MusicPlayerContainer = styled.div`
     width:100%;height:100%;

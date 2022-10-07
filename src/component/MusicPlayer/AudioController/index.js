@@ -12,6 +12,7 @@ import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import { observer } from "mobx-react-lite";
 import MusicPlayerStore from '../../../store/MusicPlayerStore';
+import {findElement} from '../../../util/utilFunc';
 
 const AudioControllerBox = styled.div`
     width:100%;height:100%;
@@ -257,8 +258,12 @@ const AudioControllerBox = styled.div`
 
 const AudioController = observer(() => {
     const [toggleVolumeController, setToggleVolumeController] = useState(false);
-    const {audioObj,setAudioSrc} = MusicPlayerStore;
-    const [isPlay,setIsPlay] = useState(false);
+    const {
+        isShuffle,audioObj,
+        musicPlayingNow,isPlaying,
+        setIsPlaying,setShuffle,
+        setNextOrPrevious
+    } = MusicPlayerStore;
     const [duration,setDuration] = useState(`00 : 00`);
     const [timeNow,setTimeNow] = useState(`00 : 00`);
     const [volume,setVolume] = useState(30);
@@ -268,21 +273,22 @@ const AudioController = observer(() => {
 
     const onPlay = useCallback(()=>{
         if(audioObj){
-            setIsPlay(true);
+            setIsPlaying(true);
         }
     },[audioObj])
 
     const onPauseAudio = useCallback(()=>{
         if(audioObj){
-            setIsPlay(false);
+            setIsPlaying(false);
         }
     },[audioObj]);
 
     const onCanPlay = useCallback((evt)=>{
         if(audioObj){
-            isPlay&&audioObj.play();
+            console.log(isPlaying);
+            isPlaying&&audioObj.play();
         }
-    },[audioObj,isPlay])
+    },[audioObj,isPlaying])
 
     const onLoadMetaData = useCallback(()=>{
         if(audioObj){
@@ -293,10 +299,17 @@ const AudioController = observer(() => {
         }
     },[audioObj]);
 
+    const onLoadedData = useCallback(()=>{
+        if(audioObj&&!isPlaying){
+            setIsPlaying(true);
+            audioObj.play();
+        }
+    },[audioObj]);
+
     const onAudioEnd = useCallback(()=>{
         if(audioObj){
-            console.log('ended');
-            setIsPlay(false);
+            setNextOrPrevious('next');
+            setIsPlaying(false);
             setTimeNow(`00 : 00`);
         }
     },[audioObj]);
@@ -332,9 +345,7 @@ const AudioController = observer(() => {
                     const {length} = audioObj.buffered;
                     const {duration} = audioObj;
                     const ratio = Math.floor(parseFloat(audioObj.buffered.end(length-1)/duration)*100)/100;
-                    console.log(ratio);
                     bufferedComponentRef.current.style.width = `${ratio*100}%`
-                    console.log(audioObj.buffered.end(0))
                     break;
                 }
             }
@@ -356,8 +367,9 @@ const AudioController = observer(() => {
             audioObj.addEventListener("play",onPlay);
             audioObj.addEventListener("pause",onPauseAudio);
             audioObj.addEventListener("loadedmetadata",onLoadMetaData);
+            audioObj.addEventListener("loadeddata",onLoadedData);
             audioObj.addEventListener("canplay",onCanPlay);
-            audioObj.addEventListener("end",onAudioEnd);
+            audioObj.addEventListener("ended",onAudioEnd);
             audioObj.addEventListener("timeupdate",onTimeUPdate);
             audioObj.volume=parseFloat(Math.floor((volume/100)*100)/100);
             audioObj.load();
@@ -365,13 +377,14 @@ const AudioController = observer(() => {
                 audioObj.removeEventListener("play",onPlay);
                 audioObj.removeEventListener("pause",onPauseAudio);
                 audioObj.removeEventListener("loadedmetadata",onLoadMetaData);
+                audioObj.removeEventListener("loadeddata",onLoadedData);
                 audioObj.removeEventListener("canplay",onCanPlay);
-                audioObj.removeEventListener("end",onAudioEnd);
+                audioObj.removeEventListener("ended",onAudioEnd);
                 audioObj.removeEventListener("timeupdate",onTimeUPdate);
                 audioObj.pause();
                 setDuration('00 : 00');
                 //setAudioSrc(null);
-                setIsPlay(false);
+                setIsPlaying(false);
             }
         }
     },[audioObj]);
@@ -382,18 +395,17 @@ const AudioController = observer(() => {
     }, []);
 
     const onClickPlayButton = useCallback((evt)=>{
-        console.log(audioObj);
         if(audioObj){
-            if(isPlay&&!audioObj.paused){
+            if(isPlaying&&!audioObj.paused){
                 audioObj.pause();
-            }else if(!isPlay&&audioObj.paused){
+            }else if(!isPlaying&&audioObj.paused){
                 audioObj.play();
-            }else if(!isPlay&&audioObj.ended){
+            }/* else if(!isPlaying&&audioObj.ended){
                 audioObj.load();
-                setIsPlay(true);
-            }
+                setIsPlaying(true);
+            } */
         }
-    },[audioObj,isPlay]);
+    },[audioObj,isPlaying]);
 
     const onClickDurationComponent = useCallback((evt)=>{
         if(audioObj){
@@ -407,11 +419,10 @@ const AudioController = observer(() => {
         }
     },[audioObj]);
 
-    /* useEffect(()=>{
-        if(audioObj){
-            console.log(audioObj.readyState)
-        }
-    },[audioObj,audioObj?.readyState]) */
+    const onClickNextOrPrevious = useCallback((evt)=>{
+        const {currentTarget:{dataset:{func}}}=evt;
+        setNextOrPrevious(func,false);
+    },[]);
 
     return (
         <AudioControllerBox>
@@ -448,17 +459,17 @@ const AudioController = observer(() => {
                     <p className="playbutton-button only-mobile" data-func="shuffle">
                         <FontAwesomeIcon icon={faShuffle} />
                     </p>
-                    <p className="playbutton-button" data-func="prev">
+                    <p className="playbutton-button" onClick={onClickNextOrPrevious} data-func="prev">
                         <FontAwesomeIcon icon={faBackwardFast} />
                     </p>
                     <p onClick={onClickPlayButton} className="playbutton-button" data-func="toggle-play">
                         {
-                            isPlay?
+                            isPlaying?
                             <FontAwesomeIcon icon={faPause} />:
                             <FontAwesomeIcon icon={faPlay}/>
                         }
                     </p>
-                    <p className="playbutton-button" data-func="next">
+                    <p className="playbutton-button" onClick={onClickNextOrPrevious} data-func="next">
                         <FontAwesomeIcon icon={faForwardFast} />
                     </p>
                     <p className="playbutton-button only-mobile" data-func="repeat">
@@ -467,18 +478,23 @@ const AudioController = observer(() => {
                 </div>
                 <div className="playtime-duration-box">
                     <p className="playtime-duration">
-                        {timeNow}/{duration}
+                        {musicPlayingNow&&`${timeNow} / ${duration}`}
                     </p>
                 </div>
             </div>
             <div className="music-info-box">
                 <p className="music-thumbnail">
-                    <img src={sampleAlbumCoverImage} alt="album-cover-page" />
+                    {
+                        musicPlayingNow&&
+                        <img src={musicPlayingNow.albumImage} alt="album-cover-page" />
+                    }
                 </p>
                 <div className="music-text-info">
-                    <p className="music-title">Speed</p>
+                    <p className="music-title">
+                        {musicPlayingNow&&musicPlayingNow.title}
+                    </p>
                     <p className="music-other-info">
-                        Jim-Yosef : 1st Album
+                        {musicPlayingNow&&musicPlayingNow.artist}
                     </p>
                 </div>
             </div>

@@ -6,6 +6,7 @@ import SampleMusic1 from '../../../static/sample_music/Jim Yosef - Speed.mp3';
 import SampleMusic2 from '../../../static/sample_music/Immediate Music - Electric Romeo.mp3';
 import sampleAlbumCoverImage1 from '../../../static/image/sample/album_cover.jpg';
 import sampleAlbumCoverImage2 from '../../../static/image/sample/album_cover_2.jpg';
+import {findElement} from '../../../util/utilFunc';
 
 const PlayListComponentBox = styled.div`
     width:100%;height:100%;
@@ -24,6 +25,9 @@ const PlayListComponentBox = styled.div`
                 justify-content: space-evenly;
                 padding-bottom: 5.5px;
                 &:hover{
+                    background-color:${props=>props.theme.emphasize};
+                }
+                &.on{
                     background-color:${props=>props.theme.emphasize};
                 }
                 &:after{
@@ -92,25 +96,8 @@ const hardCodedData = [
     }
 ]
 
-const findElement = (element,findCondition,endCondition)=>{
-    const trueFlag = element.classList.contains(findCondition)
-        ||element.tagName===findCondition
-    console.log(trueFlag);
-    if(trueFlag){
-        return element;
-    }else{
-        const endFlag = element.classList.contains(endCondition)
-        ||element.tagName===endCondition;
-        if(endFlag){
-            return null;
-        }else{
-            return findElement(element.parentElement,findCondition,endCondition);
-        }
-    }
-}
-
 const PlayListComponent = observer(()=>{
-    const {myMusicList,setMyMusicList,setAudioSrc} = MusicPlayerStore;
+    const {myMusicList,setMyMusicList,setAudioSrc,musicPlayingNow} = MusicPlayerStore;
     useEffect(()=>{
         setMyMusicList(hardCodedData);
     },[]);
@@ -120,10 +107,9 @@ const PlayListComponent = observer(()=>{
             const {target} = evt;
             const element = findElement(target,'li','ul');
             if(element){
-                const {dataset:{key}}=element; 
+                const {dataset:{index,key}}=element; 
                 const musicInfo = myMusicList.find(v=>v.id===key);
-                console.log(musicInfo);
-                setAudioSrc(musicInfo);
+                setAudioSrc({...musicInfo,index:parseInt(index)});
             }
         }
     },[myMusicList]);
@@ -135,7 +121,7 @@ const PlayListComponent = observer(()=>{
                     {
                         myMusicList&&
                         myMusicList.map((v,i)=>(
-                            <li data-key={v.id} key={v.id} className="li">
+                            <li data-index={i} data-key={v.id} key={v.id} className={`${i===musicPlayingNow?.index?'li on':'li'}`}>
                                 <p className="album-cover-thumbnail-box">
                                     <img src={v.albumImage} alt="album-cover-thumbnail"/>
                                 </p>
