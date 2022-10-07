@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import AudioController from '../../component/MusicPlayer/AudioController';
 import AlbumCover from '../../component/MusicPlayer/AlbumCover';
 import PlayListComponent from '../../component/MusicPlayer/PlayListComponent';
+import { observer } from 'mobx-react-lite';
+import MusicPlayerStore from '../../store/MusicPlayerStore';
+import SampleMusic from '../../static/sample_music/Jim Yosef - Speed.mp3';
+import SampleAlbumCover from '../../static/image/sample/album_cover.jpg';
 
 const MusicPlayerContainer = styled.div`
     width:100%;height:100%;
@@ -87,7 +91,13 @@ const MusicPlayerWrapper = styled.div`
 
 
 
-const MusicPlayer = () => {
+const MusicPlayer = observer(() => {
+    const {setAudioSrc} = MusicPlayerStore;
+
+    useEffect(()=>{
+        setAudioSrc(null);
+    },[])
+
     return (
         <MusicPlayerContainer>
             <MusicPlayerWrapper>
@@ -112,6 +122,6 @@ const MusicPlayer = () => {
         </MusicPlayerContainer>
 
     )
-}
+})
 
 export default MusicPlayer;

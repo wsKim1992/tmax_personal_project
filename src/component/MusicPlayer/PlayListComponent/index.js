@@ -1,6 +1,11 @@
-import React,{memo} from "react";
+import React,{useEffect,useCallback} from "react";
 import styled from "styled-components";
-import sampleAlbumCoverImage from '../../../static/image/sample/album_cover.jpg';
+import { observer } from "mobx-react-lite";
+import MusicPlayerStore from "../../../store/MusicPlayerStore";
+import SampleMusic1 from '../../../static/sample_music/Jim Yosef - Speed.mp3';
+import SampleMusic2 from '../../../static/sample_music/Immediate Music - Electric Romeo.mp3';
+import sampleAlbumCoverImage1 from '../../../static/image/sample/album_cover.jpg';
+import sampleAlbumCoverImage2 from '../../../static/image/sample/album_cover_2.jpg';
 
 const PlayListComponentBox = styled.div`
     width:100%;height:100%;
@@ -68,264 +73,88 @@ const PlayListComponentBox = styled.div`
     }
 `;
 
-const PlayListComponent = memo(()=>{
+const hardCodedData = [
+    {
+        src:SampleMusic1,
+        albumImage:sampleAlbumCoverImage1,
+        title:'Speed',
+        artist:'Jim Yosef',
+        id:`${Date.now()}_1`,
+        duration:'03:24'
+    },
+    {
+        src:SampleMusic2,
+        albumImage:sampleAlbumCoverImage2,
+        title:'Electric Romeo',
+        artist:'Europa',
+        id:`${Date.now()}_2`,
+        duration:'03:24'
+    }
+]
+
+const findElement = (element,findCondition,endCondition)=>{
+    const trueFlag = element.classList.contains(findCondition)
+        ||element.tagName===findCondition
+    console.log(trueFlag);
+    if(trueFlag){
+        return element;
+    }else{
+        const endFlag = element.classList.contains(endCondition)
+        ||element.tagName===endCondition;
+        if(endFlag){
+            return null;
+        }else{
+            return findElement(element.parentElement,findCondition,endCondition);
+        }
+    }
+}
+
+const PlayListComponent = observer(()=>{
+    const {myMusicList,setMyMusicList,setAudioSrc} = MusicPlayerStore;
+    useEffect(()=>{
+        setMyMusicList(hardCodedData);
+    },[]);
+
+    const onClickUl = useCallback((evt)=>{
+        if(myMusicList){
+            const {target} = evt;
+            const element = findElement(target,'li','ul');
+            if(element){
+                const {dataset:{key}}=element; 
+                const musicInfo = myMusicList.find(v=>v.id===key);
+                console.log(musicInfo);
+                setAudioSrc(musicInfo);
+            }
+        }
+    },[myMusicList]);
 
     return (
         <PlayListComponentBox>
             <div className="playListComponent">
-                <ul className="ul">
-                    <li className="li">
-                        <p className="album-cover-thumbnail-box">
-                            <img src={sampleAlbumCoverImage} alt="album-cover-thumbnail"/>
-                        </p>
-                        <div className="music-text-info-box">
-                            <p className="music-title">
-                                Speed
-                            </p>
-                            <p className="music-other-info">
-                                Jim Yosef
-                            </p>
-                        </div>
-                        <div className="playtime-duration-box">
-                            <p className="playtime-duration">
-                                3:05
-                            </p>
-                        </div>
-                    </li>
-                    <li className="li">
-                        <p className="album-cover-thumbnail-box">
-                            <img src={sampleAlbumCoverImage} alt="album-cover-thumbnail"/>
-                        </p>
-                        <div className="music-text-info-box">
-                            <p className="music-title">
-                                Speed
-                            </p>
-                            <p className="music-other-info">
-                                Jim Yosef
-                            </p>
-                        </div>
-                        <div className="playtime-duration-box">
-                            <p className="playtime-duration">
-                                3:05
-                            </p>
-                        </div>
-                    </li>
-                    <li className="li">
-                        <p className="album-cover-thumbnail-box">
-                            <img src={sampleAlbumCoverImage} alt="album-cover-thumbnail"/>
-                        </p>
-                        <div className="music-text-info-box">
-                            <p className="music-title">
-                                Speed
-                            </p>
-                            <p className="music-other-info">
-                                Jim Yosef
-                            </p>
-                        </div>
-                        <div className="playtime-duration-box">
-                            <p className="playtime-duration">
-                                3:05
-                            </p>
-                        </div>
-                    </li>
-                    <li className="li">
-                        <p className="album-cover-thumbnail-box">
-                            <img src={sampleAlbumCoverImage} alt="album-cover-thumbnail"/>
-                        </p>
-                        <div className="music-text-info-box">
-                            <p className="music-title">
-                                Speed
-                            </p>
-                            <p className="music-other-info">
-                                Jim Yosef
-                            </p>
-                        </div>
-                        <div className="playtime-duration-box">
-                            <p className="playtime-duration">
-                                3:05
-                            </p>
-                        </div>
-                    </li>
-                    <li className="li">
-                        <p className="album-cover-thumbnail-box">
-                            <img src={sampleAlbumCoverImage} alt="album-cover-thumbnail"/>
-                        </p>
-                        <div className="music-text-info-box">
-                            <p className="music-title">
-                                Speed
-                            </p>
-                            <p className="music-other-info">
-                                Jim Yosef
-                            </p>
-                        </div>
-                        <div className="playtime-duration-box">
-                            <p className="playtime-duration">
-                                3:05
-                            </p>
-                        </div>
-                    </li>
-                    <li className="li">
-                        <p className="album-cover-thumbnail-box">
-                            <img src={sampleAlbumCoverImage} alt="album-cover-thumbnail"/>
-                        </p>
-                        <div className="music-text-info-box">
-                            <p className="music-title">
-                                Speed
-                            </p>
-                            <p className="music-other-info">
-                                Jim Yosef
-                            </p>
-                        </div>
-                        <div className="playtime-duration-box">
-                            <p className="playtime-duration">
-                                3:05
-                            </p>
-                        </div>
-                    </li>
-                    <li className="li">
-                        <p className="album-cover-thumbnail-box">
-                            <img src={sampleAlbumCoverImage} alt="album-cover-thumbnail"/>
-                        </p>
-                        <div className="music-text-info-box">
-                            <p className="music-title">
-                                Speed
-                            </p>
-                            <p className="music-other-info">
-                                Jim Yosef
-                            </p>
-                        </div>
-                        <div className="playtime-duration-box">
-                            <p className="playtime-duration">
-                                3:05
-                            </p>
-                        </div>
-                    </li>
-                    <li className="li">
-                        <p className="album-cover-thumbnail-box">
-                            <img src={sampleAlbumCoverImage} alt="album-cover-thumbnail"/>
-                        </p>
-                        <div className="music-text-info-box">
-                            <p className="music-title">
-                                Speed
-                            </p>
-                            <p className="music-other-info">
-                                Jim Yosef
-                            </p>
-                        </div>
-                        <div className="playtime-duration-box">
-                            <p className="playtime-duration">
-                                3:05
-                            </p>
-                        </div>
-                    </li>
-                    <li className="li">
-                        <p className="album-cover-thumbnail-box">
-                            <img src={sampleAlbumCoverImage} alt="album-cover-thumbnail"/>
-                        </p>
-                        <div className="music-text-info-box">
-                            <p className="music-title">
-                                Speed
-                            </p>
-                            <p className="music-other-info">
-                                Jim Yosef
-                            </p>
-                        </div>
-                        <div className="playtime-duration-box">
-                            <p className="playtime-duration">
-                                3:05
-                            </p>
-                        </div>
-                    </li>
-                    <li className="li">
-                        <p className="album-cover-thumbnail-box">
-                            <img src={sampleAlbumCoverImage} alt="album-cover-thumbnail"/>
-                        </p>
-                        <div className="music-text-info-box">
-                            <p className="music-title">
-                                Speed
-                            </p>
-                            <p className="music-other-info">
-                                Jim Yosef
-                            </p>
-                        </div>
-                        <div className="playtime-duration-box">
-                            <p className="playtime-duration">
-                                3:05
-                            </p>
-                        </div>
-                    </li>
-                    <li className="li">
-                        <p className="album-cover-thumbnail-box">
-                            <img src={sampleAlbumCoverImage} alt="album-cover-thumbnail"/>
-                        </p>
-                        <div className="music-text-info-box">
-                            <p className="music-title">
-                                Speed
-                            </p>
-                            <p className="music-other-info">
-                                Jim Yosef
-                            </p>
-                        </div>
-                        <div className="playtime-duration-box">
-                            <p className="playtime-duration">
-                                3:05
-                            </p>
-                        </div>
-                    </li>
-                    <li className="li">
-                        <p className="album-cover-thumbnail-box">
-                            <img src={sampleAlbumCoverImage} alt="album-cover-thumbnail"/>
-                        </p>
-                        <div className="music-text-info-box">
-                            <p className="music-title">
-                                Speed
-                            </p>
-                            <p className="music-other-info">
-                                Jim Yosef
-                            </p>
-                        </div>
-                        <div className="playtime-duration-box">
-                            <p className="playtime-duration">
-                                3:05
-                            </p>
-                        </div>
-                    </li>
-                    <li className="li">
-                        <p className="album-cover-thumbnail-box">
-                            <img src={sampleAlbumCoverImage} alt="album-cover-thumbnail"/>
-                        </p>
-                        <div className="music-text-info-box">
-                            <p className="music-title">
-                                Speed
-                            </p>
-                            <p className="music-other-info">
-                                Jim Yosef
-                            </p>
-                        </div>
-                        <div className="playtime-duration-box">
-                            <p className="playtime-duration">
-                                3:05
-                            </p>
-                        </div>
-                    </li>
-                    <li className="li">
-                        <p className="album-cover-thumbnail-box">
-                            <img src={sampleAlbumCoverImage} alt="album-cover-thumbnail"/>
-                        </p>
-                        <div className="music-text-info-box">
-                            <p className="music-title">
-                                Speed
-                            </p>
-                            <p className="music-other-info">
-                                Jim Yosef
-                            </p>
-                        </div>
-                        <div className="playtime-duration-box">
-                            <p className="playtime-duration">
-                                3:05
-                            </p>
-                        </div>
-                    </li>   
+                <ul className="ul" onClick={onClickUl}>
+                    {
+                        myMusicList&&
+                        myMusicList.map((v,i)=>(
+                            <li data-key={v.id} key={v.id} className="li">
+                                <p className="album-cover-thumbnail-box">
+                                    <img src={v.albumImage} alt="album-cover-thumbnail"/>
+                                </p>
+                                <div className="music-text-info-box">
+                                    <p className="music-title">
+                                        {v.title}
+                                    </p>
+                                    <p className="music-other-info">
+                                        {v.artist}
+                                    </p>
+                                </div>
+                                <div className="playtime-duration-box">
+                                    <p className="playtime-duration">
+                                        {v.duration}
+                                    </p>
+                                </div>
+                            </li>
+                        ))
+                    }
                 </ul>
             </div>
         </PlayListComponentBox>

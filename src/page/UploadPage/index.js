@@ -1,5 +1,5 @@
-import React,{memo} from 'react';
-import styled from  'styled-components';
+import React, { memo, useRef, useEffect } from 'react';
+import styled from 'styled-components';
 import UploadMusicComponent from '../../component/UploadPage/UploadMusicComponent';
 import MusicListComponent from '../../component/UploadPage/MusicListComponent';
 import MobileHeader from '../../component/MobileHeader';
@@ -84,20 +84,23 @@ const UploadMusicWrapper = styled.div`
     }
 `;
 
-const UploadPage = memo(()=>{
+
+
+const UploadPage = memo(() => {
+
     return (
         <EntireContainer>
             <UploadMusicWrapper>
                 <div className='upload-music-container'>
                     <div className='mobile-header-container'>
                         <div className="mobile-header-wrapper">
-                            <MobileHeader/>
+                            <MobileHeader />
                         </div>
                     </div>
-                    <UploadMusicComponent/>
+                    <UploadMusicComponent />
                 </div>
                 <div className='music-list-container'>
-                    <MusicListComponent/>
+                    <MusicListComponent />
                 </div>
             </UploadMusicWrapper>
         </EntireContainer>

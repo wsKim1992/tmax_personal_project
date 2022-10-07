@@ -1,7 +1,12 @@
-import React,{memo,useRef,useEffect} from 'react';
+import React,{memo,useRef,useEffect,useState, useCallback} from 'react';
 import styled from 'styled-components';
 import {gsap} from 'gsap';
 import BackgroundImage1 from '../../static/image/TitlePageimage/4.jpg';
+import BackgroundImage2 from '../../static/image/TitlePageimage/3.jpg';
+import BackgroundImage3 from '../../static/image/TitlePageimage/5.jpg';
+
+import FirstImageBox from './FirstImageBox';
+import TextComponent from './TextComponent';
 
 const EntireContainer = styled.div`
     width:100%;height:100%;
@@ -11,46 +16,80 @@ const EntireWrapper = styled.div`
     width:100%;height:100%;
     background-color:${props=>props.theme.bodyBgColor};
     position:relative;
-    .image-box{
-        width:100%;height:100%;
-        background-image:
-                linear-gradient(215deg,rgba(0,0,0,0),${props=>props.theme.bodyBgColor}),
-                url(${BackgroundImage1});
+`;
+
+
+/* const TitleComponent = styled.div`
+    position:absolute;
+    top:25.5%;left:15.5%;
+    z-index:3;
+    transform-style:preserve-3d;
+    perspective:300px;
+    >span{
+        display:inline-block;
+        font-size:75.5px;
+        color:#000;
+        scale:0;
         opacity:0;
-    }
-    .main-title{
-        position:absolute;
-        top:20%;left:35.5%;
-        z-index:2;
-        transform-style:preserve-3d;
-        perspective:300px;
-        >span{
-            display:inline-block;
-            font-size:55.5px;
-            color:#000;
-            scale:0;
-            opacity:0;
-            transform:translateZ(-120px);
-        }
+        color:#fff;
+        transform:translateZ(120px);
     }
 `;
+
+const SubTitleComponent = styled.div`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 2;
+    transform-style:preserve-3d;
+    perspective:300px;
+    width:355.5px;
+    white-space:pre-wrap;
+    transform:translate(-50%, -50%);
+    letter-spacing: 3.5px;
+    >span{
+        display:inline-block;
+        font-size:35.5px;
+        color:#000;
+        scale:0;
+        opacity:0;
+        color:#fff;
+    }
+`; */
 
 const FirstPageComponent = memo(()=>{
     const imageBoxRef = useRef(null);
     const mainTitleRef = useRef(null);
+    const subTitleRef = useRef(null);
     const imageAnimationDuration = 3.5;
+    const [index,setIndex]=useState(0);
+    const bgImgArr = [BackgroundImage1,BackgroundImage2,BackgroundImage3];
+
+    useEffect(()=>{
+        if(index>bgImgArr.length-1){
+            setIndex(0);
+        }
+    },[index])
+
     useEffect(()=>{
         if(imageBoxRef.current){
             const fadeInBackgroundAnimation = gsap.to(
-                imageBoxRef.current,{
-                    duration:imageAnimationDuration,
+                imageBoxRef.current,
+                {
                     opacity:1,
+                    repeat:-1,
+                    repeatDelay:imageAnimationDuration+1,
+                    duration:imageAnimationDuration,
+                    onRepeat:()=>{
+                        setIndex(prev=>prev+1);
+                    }
                 })
             return ()=>{
                 fadeInBackgroundAnimation.kill();
             }
         }
-    },[imageBoxRef.current]);
+    },[]);
+
 
     useEffect(()=>{
         if(mainTitleRef.current){
@@ -60,7 +99,7 @@ const FirstPageComponent = memo(()=>{
                     delay:imageAnimationDuration,
                     opacity:1,
                     scale:1,
-                    duration:Math.random()*i*0.5,
+                    duration:Math.random()*i,
                     z:0,
                 })
             ))
@@ -70,29 +109,33 @@ const FirstPageComponent = memo(()=>{
                 })
             }
         }
-    },[mainTitleRef.current])
+    },[])
+
+    useEffect(()=>{
+        if(subTitleRef.current){
+            const singleLiteral = subTitleRef.current.querySelectorAll('span');
+            const textActionArr = Array.prototype.map.call(singleLiteral,(v,i)=>
+                gsap.to(v,{
+                    delay:imageAnimationDuration,
+                    duration:Math.random()*i,
+                    opacity:1,
+                    scale:1
+                })
+            )
+            return ()=>{
+                textActionArr.forEach((v)=>{
+                    v.kill();
+                })
+            }
+        }
+    },[])
 
     return (
         <EntireContainer>
             <EntireWrapper>
-                <div ref={mainTitleRef} className='main-title'>
-                    <span>M</span>
-                    <span>y</span>
-                    &nbsp; &nbsp; &nbsp; 
-                    <span>M</span>
-                    <span>U</span>
-                    <span>S</span>
-                    <span>I</span>
-                    <span>C</span>
-                    &nbsp; &nbsp; &nbsp; 
-                    <span>S</span>
-                    <span>t</span>
-                    <span>o</span>
-                    <span>r</span>
-                    <span>e</span>
-                </div>
-                <div ref={imageBoxRef} className="image-box">
-                </div>
+                <FirstImageBox imgSrc={bgImgArr[index]} ref={imageBoxRef}/>
+                <TextComponent classname={'title-text'} text={['My' , 'Music' , 'Store']}  ref={mainTitleRef}/>
+                <TextComponent classname={'title-text sub-title'} text={['Enjoy\n', 'Your\n', 'Music\n', 'In\n',' Browser!\n']}  ref={subTitleRef}/>
             </EntireWrapper>
         </EntireContainer>
     )
