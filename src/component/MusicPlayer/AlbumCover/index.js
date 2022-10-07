@@ -1,9 +1,11 @@
-import React, { memo, useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
-import sampleAlbumCoverImage from '../../../static/image/sample/album_cover.jpg';
+import { observer } from 'mobx-react-lite';
+//import sampleAlbumCoverImage from '../../../static/image/sample/album_cover.jpg';
 /* import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass, faBars } from '@fortawesome/free-solid-svg-icons';
  */
+import MusicPlayerStore from '../../../store/MusicPlayerStore';
 import MobileHeader from '../../MobileHeader';
 
 const CDRotation = keyframes`
@@ -22,7 +24,7 @@ const AlbumCoverBox = styled.div`
         position:relative;
         .music-box{
             width:100%;height:100%;
-            background-image:url(${sampleAlbumCoverImage});
+            background-image:url(${props=>props.albumImage});
             background-size:cover;
             -webkit-filter:blur(5px);
             -moz-filter:blur(5px);
@@ -63,7 +65,7 @@ const AlbumCoverBox = styled.div`
                             transform:translate(-50%, -50%);
                             background-color:${props => props.theme.bodyBgColor};
                         }
-                        animation-name: ${CDRotation};
+                        animation-name: ${props=>props.isPlay?CDRotation:''};
                         animation-duration: 1.6s;
                         animation-iteration-count: infinite;
                         animation-timing-function:linear;
@@ -111,65 +113,59 @@ const AlbumCoverBox = styled.div`
     }
 `;
 
-const AlbumCover = memo(() => {
-    /* const [showMenuBar,setShowMenuBar] = useState(false);
-    const [showSearchBox, setShowSearchBox] = useState(false);
+const AlbumCover = observer(() => {
+    const {musicPlayingNow,audioObj,setIsPlaying,isPlaying} = MusicPlayerStore;
 
-    const onClickMenuBar = useCallback((evt)=>{
-        setShowMenuBar(prev=>!prev);
-    },[]);
+    useEffect(()=>{
+        if(audioObj){
+            audioObj.paused?setIsPlaying(false):setIsPlaying(true);
+        }
+    },[audioObj,audioObj?.paused]);
 
-    const onClickShowSearchBox = useCallback((evt) => {
-        setShowSearchBox(prev => !prev);
-    }, []); */
+    /* useEffect(()=>{
+        console.log(isPlay);
+    },[isPlaying]) */
 
     return (
-        <AlbumCoverBox >
+        <AlbumCoverBox 
+            albumImage={
+                musicPlayingNow?
+                musicPlayingNow.albumImage:
+                'linear-gradient(215deg,rgba(0,0,0,0),#1D1D1D)'
+            } 
+            isPlay={isPlaying} 
+        >
             <div className="music-info-box">
                 <div className='music-box'>
                 </div>
                 <div className='cd-component-container'>
                     <MobileHeader/>
-                    {/* <div className={`${showMenuBar?'header-for-mobile show-memu':'header-for-mobile'}`}>
-                        <div className="menubar-box" onClick={onClickMenuBar}>
-                            <FontAwesomeIcon icon={faBars} />
-                        </div>
-                        <div className="search-box">
-                            <p className={`${!showSearchBox ? 'search-input-box' : 'search-input-box show'}`}>
-                                <input id="search-input" type="text" placeholder='검색어를 입력해 주세요' />
-                            </p>
-                            <p className="search-button" onClick={onClickShowSearchBox}>
-                                <FontAwesomeIcon icon={faMagnifyingGlass} />
-                            </p>
-                        </div>
-                        <div className="menubar-container">
-                            <div className='menubar-wrapper'>
-                                <p className='menubar-menu'>
-                                    Home
-                                </p>
-                                <p className='menubar-menu'>
-                                    Music Player
-                                </p>
-                                <p className='menubar-menu'>
-                                    Upload
-                                </p>
-                            </div>
-                        </div>
-                    </div> */}
-                    
                     <div className='cd-component-wrapper'>
                         <div className='cd-component-padding'>
-                            <div className='cd-componenet'>
-                                <img src={sampleAlbumCoverImage} alt="album-cover" />
-                            </div>
+                        {
+                             musicPlayingNow&&
+                            (
+                                <div className='cd-componenet'>
+                                    {
+                                        <img src={musicPlayingNow.albumImage} alt="album-cover" />
+                                    }
+                                </div>
+                            )
+                        }
                         </div>
                     </div>
                     <div className='music-info-wrapper'>
                         <div className='music-title-text'>
-                            Speed
+                            {
+                                musicPlayingNow&&
+                                musicPlayingNow.title
+                            }
                         </div>
                         <div className='music-info-text'>
-                            Jim Yosef
+                            {
+                                musicPlayingNow&&
+                                musicPlayingNow.artist
+                            }
                         </div>
                     </div>
                 </div>
