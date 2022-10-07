@@ -4,7 +4,7 @@ import logoImage2 from '../../static/image/logo2.jpg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
-import { MUSIC_PLAYER, UPLOAD_PAGE } from '../../constant/PagePath';
+import { MUSIC_PLAYER, UPLOAD_PAGE, TITLE_PAGE } from '../../constant/PagePath';
 
 const HeaderContainer = styled.div`
     width:100%;height:65.5px;
@@ -231,7 +231,7 @@ const Header = memo(() => {
                     <div className="menu-wrapper">
                         <ul className="menu">
                             <li className="menu-li">
-                                <Link to={MUSIC_PLAYER}>
+                                <Link to={TITLE_PAGE}>
                                     <span>Home</span>
                                 </Link>
                             </li>

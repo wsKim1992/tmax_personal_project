@@ -1,7 +1,8 @@
-import React,{memo} from 'react';
-import styled from  'styled-components';
+import React, { memo, useRef, useEffect } from 'react';
+import styled from 'styled-components';
 import UploadMusicComponent from '../../component/UploadPage/UploadMusicComponent';
 import MusicListComponent from '../../component/UploadPage/MusicListComponent';
+import MobileHeader from '../../component/MobileHeader';
 
 const EntireContainer = styled.div`
     width:100%;height:100%;
@@ -17,6 +18,9 @@ const UploadMusicWrapper = styled.div`
         width:55.5vw;;height:100%;
         display:flex;
         align-items:center;
+        .mobile-header-container{
+            display:none;
+        }
     }
     .music-list-container{
         width:20vw;height:100%;
@@ -42,25 +46,61 @@ const UploadMusicWrapper = styled.div`
         position:relative;
         .upload-music-container{
             width:95.5vw;
+            display:flex;
+            flex-direction:column;
+            justify-content:space-around;
+            .mobile-header-container{
+                display:block;
+                width:100%;height:7.5%;
+                .mobile-header-wrapper{
+                    width:85vw;height:100%;
+                    margin:0 auto;
+                    position:relative;
+                }
+            }
         }
         .music-list-container{
-            position: absolute;
-            background: #000;
-            top: 0%;
-            left: 100%;
+            position:absolute;
+            height: 30vh;
+            top: 8%;
+            border-radius: 10.5px;
+            right: 10px;
+            background-color:#000;
+        }
+    }
+    @media screen and (max-width:650px){
+        .music-list-container{
+            width:35.5vw;
+            padding:2.5px;
+        }
+    }
+
+    @media screen and (max-width:520px){
+        .music-list-container{
+            display:none;
+            width:92.5vw;height:25.5vh;
+            padding:1.5px;
         }
     }
 `;
 
-const UploadPage = memo(()=>{
+
+
+const UploadPage = memo(() => {
+
     return (
         <EntireContainer>
             <UploadMusicWrapper>
                 <div className='upload-music-container'>
-                    <UploadMusicComponent/>
+                    <div className='mobile-header-container'>
+                        <div className="mobile-header-wrapper">
+                            <MobileHeader />
+                        </div>
+                    </div>
+                    <UploadMusicComponent />
                 </div>
                 <div className='music-list-container'>
-                    <MusicListComponent/>
+                    <MusicListComponent />
                 </div>
             </UploadMusicWrapper>
         </EntireContainer>

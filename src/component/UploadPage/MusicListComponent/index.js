@@ -24,6 +24,11 @@ const MusicListWrapper = styled.div`
         box-sizing:border-box;
         border-radius: 10.5px;
     }
+    @media screen and (max-width:650px){
+        .musicList-box{
+            padding: 0px;
+        }
+    }
 `;
 
 const MusicListComponent = memo(() => {

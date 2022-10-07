@@ -4,8 +4,10 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faRotate,faPlay,faStop,faPlus,faMinus,faVolumeLow} from '@fortawesome/free-solid-svg-icons';
 import musicCoverSample from '../../../../static/image/logo.jpg';
 import { GenreList } from "../../../../constant/MusicGenre";
-import sampleMusic from "../../../../static/sample_music/Jim Yosef - Speed.mp3";
+//import sampleMusic from "../../../../static/sample_music/Jim Yosef - Speed.mp3";
 import Slider from '@mui/material/Slider';
+import { observer } from 'mobx-react-lite';
+import UploadStore from '../../../../store/UploadStore';
 
 const UploadedMusicBox = styled.div`
     width:100%;
@@ -308,10 +310,59 @@ const UploadedMusicBox = styled.div`
             }
         }
     }
-    
+
+    @media screen and (max-width:510px){
+        .music-upload-form-box{
+            .music-upload-form{
+                form{
+                    width:100%;height:100%;
+                    display:flex;
+                    flex-direction:row;
+                    align-items:center;
+                    justify-content:space-between;
+                    .upload-image-form-box{
+                        width:100px;height:100px;
+                    }
+                    .upload-text-info-box{
+                        width:calc(100% - 125px);
+                    }
+                }
+            }
+        }
+        
+    }
 `;
 
-const SingleMusicComponent = memo(({idx})=>{
+const convertIntoBase64 = (url)=>{
+    return new Promise((resolve,reject)=>{
+        const tempImg = new Image();
+        tempImg.src = url;
+        tempImg.onload = ()=>{
+            try{
+                let canvas = document.createElement('canvas');
+                canvas.width = 180;canvas.height=180;
+                canvas.getContext('2d').drawImage(tempImg,0,0,canvas.width,canvas.height);
+                resolve(canvas.toDataURL('image/png'));
+            }catch(err){
+                throw new Error("이미지 업로드 오류!");
+            }
+        }
+    })
+}
+
+const convertIntoFile = (bs64)=>{
+    const [_,dataType,base64Data] = bs64.split(/[:;]+/);
+    const realData = base64Data.split('base64,');
+    const realDataIntoByte = window.atob(realData[1]);
+    const byteArr = Array.from({length:realDataIntoByte.length},()=>0);
+    let n = realDataIntoByte.length;
+    for(let i =0 ;i<n; i++){
+        byteArr.push(realDataIntoByte.charCodeAt(i));
+    }
+    return new Blob([new Uint8Array(byteArr)],{'type':dataType});
+}
+
+const SingleMusicComponent = observer(({idx,musicInfo})=>{
     const [Genre,setGenre] = useState(GenreList.POP);
     const [playing,setPlaying] = useState(false);
     const [mute,setMute] = useState(false);
@@ -320,11 +371,16 @@ const SingleMusicComponent = memo(({idx})=>{
     const [minute,setMinute] = useState(0);
     const [second,setSecond] = useState(0);
     const [audioBuffer,setAudioBuffer] = useState(null);
+    const [albumCover,setAlbumCover] = useState(musicCoverSample);
+    const [title,setTitle] = useState('');
+    const [singer,setSinger] = useState('');
+    const [albumName,setAlbumName] = useState('');
     const [showVolumeController,setShowVolumeController]=useState(false);
     const audioRef = useRef(null);
     const durationControllerRef = useRef(null);
     const progressContollerRef = useRef(null);
     const bufferedComponentRef = useRef(null);
+    const {deleteSingleMusicToBeUploaded}=UploadStore;
 
     const onPlayAudio = useCallback((evt)=>{
         if(audioRef.current){
@@ -391,22 +447,20 @@ const SingleMusicComponent = memo(({idx})=>{
             console.log(audioRef.current.readyState);
             if(audioRef.current.readyState>1){
                 const {length} = audioRef.current.buffered;
-                console.log(`start ${0} : ${audioRef.current.buffered.start(0)}`);
+                /* console.log(`start ${0} : ${audioRef.current.buffered.start(0)}`);
                 console.log(`start ${0} : ${audioRef.current.buffered.end(0)}`);
-                console.log(`length : ${length}`);
+                console.log(`length : ${length}`); */
                 if(length<=1){
                     const {duration} = audioRef.current;
                     const ratio = Math.floor(parseFloat(audioRef.current.buffered.end(0)/duration)*100)/100;
                     bufferedComponentRef.current.style.width = `${ratio*100}%`;
                 }
             }
-            
-            
         }
     },[audioRef.current,bufferedComponentRef.current,audioRef.current?.readyState])
 
     useEffect(()=>{
-        audioRef.current = new Audio(sampleMusic);
+        audioRef.current = new Audio(musicInfo.url);
         audioRef.current.volume = parseFloat(Math.floor((volume/100)*100)/100);
         audioRef.current.addEventListener('play',onPlayAudio);
         audioRef.current.addEventListener('pause',onPauseAudio);
@@ -451,9 +505,31 @@ const SingleMusicComponent = memo(({idx})=>{
         }
     },[audioRef.current,playing])
 
-    const onSubmitUploadMusicToServer = useCallback((evt)=>{
-
-    },[]);
+    const onSubmitUploadMusicToServer = useCallback(async(evt)=>{
+        try{
+            if(title===''||singer===''||albumName===''){
+                throw new Error('form의 내용을 모두 채워 주세요!');
+            }else{
+                let imageFile;
+                if(albumCover!==musicCoverSample){
+                    imageFile = convertIntoFile(albumCover);
+                }else{
+                    const bs64 = await convertIntoBase64(albumCover);
+                    imageFile = convertIntoFile(bs64)
+                }
+                const formData = new FormData();
+                formData.append("album-image-file",imageFile);
+                formData.append("Genre",Genre);
+                formData.append("singer",singer);
+                formData.append("albumName",albumName);
+            }
+        }catch(err){
+            window.alert(err.message);
+        }
+    },[
+        Genre,title,singer,
+        albumName,albumCover
+    ]);
 
     const onChangeVolumeOnComponent = useCallback((evt,value)=>{
         if(audioRef.current){
@@ -481,9 +557,26 @@ const SingleMusicComponent = memo(({idx})=>{
     },[audioRef.current,durationControllerRef.current]);
 
     const onClickShowVolumeController = useCallback((evt)=>{
-        console.log('onClickShowVolumeController');
         setShowVolumeController(prev=>!prev);
+    },[]);
+
+    const onChangeAlbumCoverImage = useCallback((evt)=>{
+        const {target:{files}}=evt;
+        const {type}=files[0];
+        console.log(type);
+        if(type.match('image/*')){
+            let fileReader = new FileReader();
+            fileReader.onload = (e)=>{
+                setAlbumCover(e.target.result);
+            }
+            fileReader.readAsDataURL(files[0])
+        }
     },[])
+
+    const onClickDeleteFromList = useCallback((evt)=>{
+        const {currentTarget:{dataset:{key}}}=evt;
+        deleteSingleMusicToBeUploaded(key);
+    },[]);
 
     return (
         <UploadedMusicBox>
@@ -512,10 +605,10 @@ const SingleMusicComponent = memo(({idx})=>{
                                 />
                             </p>
                         </div>
-                        <p className="add-button">
+                        <button onClick={onSubmitUploadMusicToServer} className="add-button">
                             <FontAwesomeIcon icon={faPlus}/>
-                        </p>
-                        <p className="delete-button">
+                        </button>
+                        <p onClick={onClickDeleteFromList} className="delete-button" data-key={musicInfo.key}>
                             <FontAwesomeIcon icon={faMinus}/>
                         </p>
                     </div>
@@ -529,19 +622,26 @@ const SingleMusicComponent = memo(({idx})=>{
             </div>
             <div className="music-upload-form-box">
                 <div className="music-upload-form">
-                    <form onSubmit={onSubmitUploadMusicToServer}>
+                    <form>
                         <div className="upload-image-form-box">
-                            <input id={`idx_${idx}`} accept="image/*" type="file"/>
+                            <input onChange={onChangeAlbumCoverImage} id={`idx_${idx}`} accept="image/*" type="file"/>
                             <label htmlFor={`idx_${idx}`}>
-                                <img src={musicCoverSample} alt="music-cover-img"/>
+                                <img src={albumCover?albumCover:musicCoverSample} alt="music-cover-img"/>
                             </label>
                         </div>
                         <div className="upload-text-info-box">
                             <div className="upload-text-half">
-                                <input type="text" placeholder="artist name"/>
+                                <input type="text" 
+                                    onChange={(evt)=>setSinger(evt.currentTarget.value)} 
+                                    value={singer} 
+                                    placeholder="artist name"
+                                />
                             </div>
                             <div className="upload-text-half right">
-                                <input type="text" placeholder="name of song"/>
+                                <input type="text" 
+                                    onChange={(evt)=>setTitle(evt.target.value)}
+                                    value={title}
+                                    placeholder="name of song"/>
                             </div>
                             <div className="upload-text-full">
                                 <select 
@@ -556,10 +656,14 @@ const SingleMusicComponent = memo(({idx})=>{
                                 </select>
                             </div>
                             <div className="upload-text-half">
-                                <input type="text" readOnly value={'39.5 MB'} placeholder="artist name"/>
+                                <input type="text" readOnly value={`${musicInfo.size}`} placeholder="artist name"/>
                             </div>
                             <div className="upload-text-half right">
-                                <input type="text" placeholder="앨범명을 입력해 주세요" />
+                                <input
+                                    value={albumName}
+                                    onChange={(evt)=>setAlbumName(evt.target.value)}
+                                    type="text" 
+                                    placeholder="앨범명을 입력해 주세요" />
                             </div>
                         </div>
                     </form>

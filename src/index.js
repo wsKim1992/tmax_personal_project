@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {createGlobalStyle,ThemeProvider} from 'styled-components';
+import { Provider } from 'mobx-react';
+import uploadStore from './store/UploadStore';
 
 const GlobalStyle = createGlobalStyle`
 :root{
@@ -87,14 +89,13 @@ const basicTheme = {
   headerMenuFontColor:'#FFF'
 }
 
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <GlobalStyle/>
-      <ThemeProvider theme={basicTheme}>
-      <App />
-      </ThemeProvider>
+		<ThemeProvider theme={basicTheme}>
+		<App />
+		</ThemeProvider>
   </React.StrictMode>
 );
 

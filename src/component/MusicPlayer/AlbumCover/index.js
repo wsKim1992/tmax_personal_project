@@ -1,8 +1,10 @@
 import React, { memo, useState, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
 import sampleAlbumCoverImage from '../../../static/image/sample/album_cover.jpg';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+/* import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass, faBars } from '@fortawesome/free-solid-svg-icons';
+ */
+import MobileHeader from '../../MobileHeader';
 
 const CDRotation = keyframes`
     0%{
@@ -32,9 +34,6 @@ const AlbumCoverBox = styled.div`
             top:0;left:0; 
             width:100%;height:100%;
             z-index:2;
-            .header-for-mobile{
-                display:none;
-            }
             .cd-component-wrapper{
                 margin: 5% auto;
                 width:63.3%;
@@ -107,112 +106,13 @@ const AlbumCoverBox = styled.div`
                 flex-direction: column;
                 align-items: center;
                 justify-content: space-evenly;
-                .header-for-mobile{
-                    position:absolute;
-                    top:25px;left:2.5%;
-                    width:100%;height:28.5px;
-                    background:transparent;
-                    display:flex;flex-direction:row;
-                    align-items:center;
-                    justify-content:space-around;
-                    &.show-memu{
-                        .menubar-container{
-                            display:block;
-                        }
-                    }
-                    .menubar-container{
-                        display:none;
-                        position:absolute;
-                        top:105%;left:5.5%;
-                        z-index:2;
-                        background-color:#000;
-                        width:155.5px;height:auto;
-                        padding:5.5px;
-                        box-sizing:border-box;
-                        border-radius:4.5px;
-                        .menubar-wrapper{
-                            width:100%;height:auto;
-                            .menubar-menu{
-                                margin:10.5px 0;
-                                text-align:center;
-                                width:100%;height:25px;
-                                line-height:25px;
-                                border-radius:4.5px;
-                                padding:2.5px;
-                                box-sizing:border-box;
-                                color:#fff;
-                                font-size:var(--tablet-body-text);
-                                background:${props=>props.theme.headerBgColor};
-                                &:hover{
-                                    background-image:linear-gradient(45deg,#ff4d5c,#1F2125);
-                                }
-                            }
-                        }
-                    }
-                    
-                    .menubar-box{
-                        width:25.5px;height:25.5px;
-                        line-height:25.5px;
-                        border-radius:4.5px;
-                        background-image:linear-gradient(311deg,#636461,#1F2125);
-                        box-shadow:0px 0px 4.5px #454545;
-                        font-size:var(--tablet-body-icon);
-                        color:#fff;
-                        text-align:center;
-                        &:hover{
-                            background-image:linear-gradient(45deg,#636461,#1F2125);
-                            color:${props => props.theme.emphasize};
-                        }
-                        position:relative;
-                        
-                    }
-                    .search-box{
-                        width:calc(100% - 155.5px);height:25.5px;
-                        display:flex;flex-direction:row;
-                        align-items:center;
-                        justify-content:space-between;
-                        .search-input-box{
-                            width:calc(100% - 35.5px);height:100%;
-                            >input[type="text"]{
-                                display:block;
-                                width:0%;height:100%;
-                                padding:0px;box-sizing:border-box;
-                                font-size:var(--tablet-header-search);
-                                color:#454545;
-                                border-radius:12.5px;
-                                transition : .5s width;
-                                border:none;
-                            }
-                            &.show{
-                                >input[type="text"]{
-                                    width:100%;
-                                    padding:5.5px;
-                                }
-                            }                            
-                        }
-                        .search-button{
-                            width:25.5px;height:25.5px;
-                            line-height:25.5px;
-                            border-radius:4.5px;
-                            background-image:linear-gradient(311deg,#636461,#1F2125);
-                            box-shadow:0px 0px 4.5px #454545;
-                            font-size:var(--tablet-body-icon);
-                            color:#fff;
-                            text-align:center;
-                            &:hover{
-                                background-image:linear-gradient(45deg,#636461,#1F2125);
-                                color:${props => props.theme.emphasize};
-                            }
-                        }
-                    }
-                }
             }
         }
     }
 `;
 
 const AlbumCover = memo(() => {
-    const [showMenuBar,setShowMenuBar] = useState(false);
+    /* const [showMenuBar,setShowMenuBar] = useState(false);
     const [showSearchBox, setShowSearchBox] = useState(false);
 
     const onClickMenuBar = useCallback((evt)=>{
@@ -221,7 +121,7 @@ const AlbumCover = memo(() => {
 
     const onClickShowSearchBox = useCallback((evt) => {
         setShowSearchBox(prev => !prev);
-    }, []);
+    }, []); */
 
     return (
         <AlbumCoverBox >
@@ -229,7 +129,8 @@ const AlbumCover = memo(() => {
                 <div className='music-box'>
                 </div>
                 <div className='cd-component-container'>
-                    <div className={`${showMenuBar?'header-for-mobile show-memu':'header-for-mobile'}`}>
+                    <MobileHeader/>
+                    {/* <div className={`${showMenuBar?'header-for-mobile show-memu':'header-for-mobile'}`}>
                         <div className="menubar-box" onClick={onClickMenuBar}>
                             <FontAwesomeIcon icon={faBars} />
                         </div>
@@ -254,7 +155,7 @@ const AlbumCover = memo(() => {
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     
                     <div className='cd-component-wrapper'>
                         <div className='cd-component-padding'>

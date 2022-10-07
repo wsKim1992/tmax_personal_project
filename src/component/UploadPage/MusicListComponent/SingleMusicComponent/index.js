@@ -67,6 +67,9 @@ const SingleMusicContainer = styled.div`
     &:hover{
         background:${props=>props.theme.emphasize};
     }
+    @media screen and (max-width:650px){
+        width:98.5%;
+    }
 `;
 
 const SingleMusicComponent = memo(()=>{
