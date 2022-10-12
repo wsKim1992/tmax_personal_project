@@ -97,9 +97,11 @@ const hardCodedData = [
 ]
 
 const PlayListComponent = observer(()=>{
-    const {myMusicList,setMyMusicList,setAudioSrc,musicPlayingNow} = MusicPlayerStore;
+    const {myMusicList,setMyMusicList,setAudioSrc,setShowMyPlayList,musicPlayingNow,showMyPlayList} = MusicPlayerStore;
+    
     useEffect(()=>{
         setMyMusicList(hardCodedData);
+        
     },[]);
 
     const onClickUl = useCallback((evt)=>{
@@ -115,6 +117,7 @@ const PlayListComponent = observer(()=>{
     },[myMusicList]);
 
     return (
+        showMyPlayList&&
         <PlayListComponentBox>
             <div className="playListComponent">
                 <ul className="ul" onClick={onClickUl}>
