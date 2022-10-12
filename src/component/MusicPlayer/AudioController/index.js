@@ -1,18 +1,18 @@
-import React, { useRef,useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import styled from 'styled-components';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    faPlay,faPause, faBackwardFast,
+    faPlay, faPause, faBackwardFast,
     faForwardFast, faVolumeHigh,
     faVolumeLow, faVolumeMute,
-    faRepeat, faShuffle,faListUl
+    faRepeat, faShuffle, faListUl
 } from '@fortawesome/free-solid-svg-icons';
 import sampleAlbumCoverImage from '../../../static/image/sample/album_cover.jpg';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import { observer } from "mobx-react-lite";
 import MusicPlayerStore from '../../../store/MusicPlayerStore';
-import {findElement} from '../../../util/utilFunc';
+import { findElement } from '../../../util/utilFunc';
 
 const AudioControllerBox = styled.div`
     width:100%;height:100%;
@@ -147,6 +147,9 @@ const AudioControllerBox = styled.div`
             &:hover{
                 color:${props => props.theme.emphasize};
             }
+            &.on{
+                color:${props => props.theme.emphasize};
+            }
             position:relative;
             .volume-controller-box{
                 position:absolute;
@@ -259,170 +262,170 @@ const AudioControllerBox = styled.div`
 const AudioController = observer(() => {
     const [toggleVolumeController, setToggleVolumeController] = useState(false);
     const {
-        isShuffle,audioObj,
-        musicPlayingNow,isPlaying,
-        setIsPlaying,setShuffle,
-        setNextOrPrevious
+        isShuffle, audioObj, isRepeat,
+        musicPlayingNow, isPlaying,showMyPlayList,
+        setIsPlaying, setShuffle,
+        setNextOrPrevious, setIsRepeat,
+        setShowMyPlayList
     } = MusicPlayerStore;
-    const [duration,setDuration] = useState(`00 : 00`);
-    const [timeNow,setTimeNow] = useState(`00 : 00`);
-    const [volume,setVolume] = useState(30);
+    const [duration, setDuration] = useState(`00 : 00`);
+    const [timeNow, setTimeNow] = useState(`00 : 00`);
+    const [volume, setVolume] = useState(30);
     const durationControllerRef = useRef(null);
     const progressContollerRef = useRef(null);
     const bufferedComponentRef = useRef(null);
 
-    const onPlay = useCallback(()=>{
-        if(audioObj){
+    const onPlay = useCallback(() => {
+        if (audioObj) {
             setIsPlaying(true);
         }
-    },[audioObj])
+    }, [audioObj])
 
-    const onPauseAudio = useCallback(()=>{
-        if(audioObj){
+    const onPauseAudio = useCallback(() => {
+        if (audioObj) {
             setIsPlaying(false);
         }
-    },[audioObj]);
+    }, [audioObj]);
 
-    const onCanPlay = useCallback((evt)=>{
-        if(audioObj){
-            console.log(isPlaying);
-            isPlaying&&audioObj.play();
+    const onCanPlay = useCallback((evt) => {
+        if (audioObj) {
+            isPlaying && audioObj.play();
         }
-    },[audioObj,isPlaying])
+    }, [audioObj, isPlaying])
 
-    const onLoadMetaData = useCallback(()=>{
-        if(audioObj){
-            const {duration} = audioObj;
-            let sec = parseInt(duration%60);
-            let min = parseInt(duration/60);
-            setDuration(`${min<10?`0${min}`:`${min}`} : ${sec<10?`0${sec}`:`${sec}`}`);
+    const onLoadMetaData = useCallback(() => {
+        if (audioObj) {
+            const { duration } = audioObj;
+            let sec = parseInt(duration % 60);
+            let min = parseInt(duration / 60);
+            setDuration(`${min < 10 ? `0${min}` : `${min}`} : ${sec < 10 ? `0${sec}` : `${sec}`}`);
         }
-    },[audioObj]);
+    }, [audioObj]);
 
-    const onLoadedData = useCallback(()=>{
-        if(audioObj&&!isPlaying){
+    const onLoadedData = useCallback(() => {
+        if (audioObj && !isPlaying) {
             setIsPlaying(true);
             audioObj.play();
         }
-    },[audioObj]);
+    }, [audioObj]);
 
-    const onAudioEnd = useCallback(()=>{
-        if(audioObj){
+    const onAudioEnd = useCallback(() => {
+        if (audioObj) {
             setNextOrPrevious('next');
             setIsPlaying(false);
             setTimeNow(`00 : 00`);
         }
-    },[audioObj]);
+    }, [audioObj]);
 
-    const onTimeUPdate = useCallback(()=>{
-        if(audioObj){
-            const {currentTime,duration} = audioObj;
-            let sec = parseInt(currentTime%60);
-            let min = parseInt(currentTime/60);
-            setTimeNow(`${min<10?`0${min}`:`${min}`} : ${sec<10?`0${sec}`:`${sec}`}`);
-            if(durationControllerRef.current&&progressContollerRef.current){
-                const ratio = parseFloat(Math.floor((currentTime/duration)*100)/100);
+    const onTimeUPdate = useCallback(() => {
+        if (audioObj) {
+            const { currentTime, duration } = audioObj;
+            let sec = parseInt(currentTime % 60);
+            let min = parseInt(currentTime / 60);
+            setTimeNow(`${min < 10 ? `0${min}` : `${min}`} : ${sec < 10 ? `0${sec}` : `${sec}`}`);
+            if (durationControllerRef.current && progressContollerRef.current) {
+                const ratio = parseFloat(Math.floor((currentTime / duration) * 100) / 100);
                 const style = document.defaultView.getComputedStyle(durationControllerRef.current);
-                const {width:durationWidth}=style;
+                const { width: durationWidth } = style;
                 progressContollerRef.current.style.width
-                    = isNaN(ratio)?
+                    = isNaN(ratio) ?
                         `${0.0}%`
-                        :`${(Math.floor(parseFloat(durationWidth)*ratio*100)/100)}px`
+                        : `${(Math.floor(parseFloat(durationWidth) * ratio * 100) / 100)}px`
             }
         }
-    },[audioObj]);
+    }, [audioObj]);
 
-    useEffect(()=>{
-        if(audioObj){
-            switch(audioObj.readyState){
-                case 0:{
+    useEffect(() => {
+        if (audioObj) {
+            switch (audioObj.readyState) {
+                case 0: {
                     break;
                 }
-                case 1:{
+                case 1: {
                     break;
                 }
-                default:{
-                    const {length} = audioObj.buffered;
-                    const {duration} = audioObj;
-                    const ratio = Math.floor(parseFloat(audioObj.buffered.end(length-1)/duration)*100)/100;
-                    bufferedComponentRef.current.style.width = `${ratio*100}%`
+                default: {
+                    const { length } = audioObj.buffered;
+                    const { duration } = audioObj;
+                    const ratio = Math.floor(parseFloat(audioObj.buffered.end(length - 1) / duration) * 100) / 100;
+                    bufferedComponentRef.current.style.width = `${ratio * 100}%`
                     break;
                 }
             }
         }
-    },[
-        audioObj,bufferedComponentRef.current,
-        audioObj?.readyState,audioObj?.buffered
+    }, [
+        audioObj, bufferedComponentRef.current,
+        audioObj?.readyState, audioObj?.buffered
     ]);
 
-    const onChangeVolumeOnComponent = useCallback((evt,value)=>{
-        if(audioObj){
+    const onChangeVolumeOnComponent = useCallback((evt, value) => {
+        if (audioObj) {
             setVolume(value);
-            audioObj.volume = parseFloat(Math.floor((value/100)*100)/100);
+            audioObj.volume = parseFloat(Math.floor((value / 100) * 100) / 100);
         }
-    },[audioObj]);    
+    }, [audioObj]);
 
-    useEffect(()=>{
-        if(audioObj){
-            audioObj.addEventListener("play",onPlay);
-            audioObj.addEventListener("pause",onPauseAudio);
-            audioObj.addEventListener("loadedmetadata",onLoadMetaData);
-            audioObj.addEventListener("loadeddata",onLoadedData);
-            audioObj.addEventListener("canplay",onCanPlay);
-            audioObj.addEventListener("ended",onAudioEnd);
-            audioObj.addEventListener("timeupdate",onTimeUPdate);
-            audioObj.volume=parseFloat(Math.floor((volume/100)*100)/100);
+    useEffect(() => {
+        if (audioObj) {
+            audioObj.addEventListener("play", onPlay);
+            audioObj.addEventListener("pause", onPauseAudio);
+            audioObj.addEventListener("loadedmetadata", onLoadMetaData);
+            audioObj.addEventListener("loadeddata", onLoadedData);
+            audioObj.addEventListener("canplay", onCanPlay);
+            audioObj.addEventListener("ended", onAudioEnd);
+            audioObj.addEventListener("timeupdate", onTimeUPdate);
+            audioObj.volume = parseFloat(Math.floor((volume / 100) * 100) / 100);
             audioObj.load();
-            return()=>{
-                audioObj.removeEventListener("play",onPlay);
-                audioObj.removeEventListener("pause",onPauseAudio);
-                audioObj.removeEventListener("loadedmetadata",onLoadMetaData);
-                audioObj.removeEventListener("loadeddata",onLoadedData);
-                audioObj.removeEventListener("canplay",onCanPlay);
-                audioObj.removeEventListener("ended",onAudioEnd);
-                audioObj.removeEventListener("timeupdate",onTimeUPdate);
+            return () => {
+                audioObj.removeEventListener("play", onPlay);
+                audioObj.removeEventListener("pause", onPauseAudio);
+                audioObj.removeEventListener("loadedmetadata", onLoadMetaData);
+                audioObj.removeEventListener("loadeddata", onLoadedData);
+                audioObj.removeEventListener("canplay", onCanPlay);
+                audioObj.removeEventListener("ended", onAudioEnd);
+                audioObj.removeEventListener("timeupdate", onTimeUPdate);
                 audioObj.pause();
                 setDuration('00 : 00');
                 //setAudioSrc(null);
                 setIsPlaying(false);
             }
         }
-    },[audioObj]);
+    }, [audioObj]);
 
     const onClickVolumeIcon = useCallback((evt) => {
         evt.stopPropagation();
         setToggleVolumeController(prev => !prev);
     }, []);
 
-    const onClickPlayButton = useCallback((evt)=>{
-        if(audioObj){
-            if(isPlaying&&!audioObj.paused){
+    const onClickPlayButton = useCallback((evt) => {
+        if (audioObj) {
+            if (isPlaying && !audioObj.paused) {
                 audioObj.pause();
-            }else if(!isPlaying&&audioObj.paused){
+            } else if (!isPlaying && audioObj.paused) {
                 audioObj.play();
             }/* else if(!isPlaying&&audioObj.ended){
                 audioObj.load();
                 setIsPlaying(true);
             } */
         }
-    },[audioObj,isPlaying]);
+    }, [audioObj, isPlaying]);
 
-    const onClickDurationComponent = useCallback((evt)=>{
-        if(audioObj){
-            const {currentTarget} = evt;
-            const {nativeEvent:{offsetX}}=evt;
+    const onClickDurationComponent = useCallback((evt) => {
+        if (audioObj) {
+            const { currentTarget } = evt;
+            const { nativeEvent: { offsetX } } = evt;
             const durationBarStyle = document.defaultView.getComputedStyle(currentTarget);
-            const {width:durationWidth}=durationBarStyle;
-            const {duration} = audioObj;
-            const ratio = parseFloat(offsetX/parseFloat(durationWidth));
-            audioObj.currentTime = Math.floor(100*(duration*ratio))/100;
+            const { width: durationWidth } = durationBarStyle;
+            const { duration } = audioObj;
+            const ratio = parseFloat(offsetX / parseFloat(durationWidth));
+            audioObj.currentTime = Math.floor(100 * (duration * ratio)) / 100;
         }
-    },[audioObj]);
+    }, [audioObj]);
 
-    const onClickNextOrPrevious = useCallback((evt)=>{
-        const {currentTarget:{dataset:{func}}}=evt;
-        setNextOrPrevious(func,false);
-    },[]);
+    const onClickNextOrPrevious = useCallback((evt) => {
+        const { currentTarget: { dataset: { func } } } = evt;
+        setNextOrPrevious(func, false);
+    }, []);
 
     return (
         <AudioControllerBox>
@@ -436,24 +439,29 @@ const AudioController = observer(() => {
                 <div className="other-func-btn" data-func="volume">
                     <div className="volumn-controller-box">
                         <p className="volumn-button">
-                            <FontAwesomeIcon onClick={onClickVolumeIcon} icon={faVolumeHigh} />
+                            {
+                                volume > 50 ? <FontAwesomeIcon onClick={onClickVolumeIcon} icon={faVolumeHigh} /> :
+                                    (
+                                        volume <= 0 ? <FontAwesomeIcon onClick={onClickVolumeIcon} icon={faVolumeMute} /> :
+                                            <FontAwesomeIcon onClick={onClickVolumeIcon} icon={faVolumeLow} />
+                                    )
+                            }
                         </p>
                         <p className="volumn-controller-box">
-                            <Slider 
+                            <Slider
                                 value={volume}
-                                defaultValue={50} 
-                                aria-label="Default" 
-                                valueLabelDisplay="auto" 
+                                valueLabelDisplay="auto"
+                                onChange={onChangeVolumeOnComponent}
                             />
                         </p>
                     </div>
                     <div className="show-list-box-button-box">
-                        <p className="show-list-box-button">
+                        <p className="show-list-box-button" onClick={()=>setShowMyPlayList()}>
                             <FontAwesomeIcon icon={faListUl} />
                         </p>
                     </div>
                 </div>
-            </div> 
+            </div>
             <div className="playbutton-box">
                 <div className="playbutton-button-list">
                     <p className="playbutton-button only-mobile" data-func="shuffle">
@@ -464,9 +472,9 @@ const AudioController = observer(() => {
                     </p>
                     <p onClick={onClickPlayButton} className="playbutton-button" data-func="toggle-play">
                         {
-                            isPlaying?
-                            <FontAwesomeIcon icon={faPause} />:
-                            <FontAwesomeIcon icon={faPlay}/>
+                            isPlaying ?
+                                <FontAwesomeIcon icon={faPause} /> :
+                                <FontAwesomeIcon icon={faPlay} />
                         }
                     </p>
                     <p className="playbutton-button" onClick={onClickNextOrPrevious} data-func="next">
@@ -478,34 +486,34 @@ const AudioController = observer(() => {
                 </div>
                 <div className="playtime-duration-box">
                     <p className="playtime-duration">
-                        {musicPlayingNow&&`${timeNow} / ${duration}`}
+                        {musicPlayingNow && `${timeNow} / ${duration}`}
                     </p>
                 </div>
             </div>
             <div className="music-info-box">
                 <p className="music-thumbnail">
                     {
-                        musicPlayingNow&&
+                        musicPlayingNow &&
                         <img src={musicPlayingNow.albumImage} alt="album-cover-page" />
                     }
                 </p>
                 <div className="music-text-info">
                     <p className="music-title">
-                        {musicPlayingNow&&musicPlayingNow.title}
+                        {musicPlayingNow && musicPlayingNow.title}
                     </p>
                     <p className="music-other-info">
-                        {musicPlayingNow&&musicPlayingNow.artist}
+                        {musicPlayingNow && musicPlayingNow.artist}
                     </p>
                 </div>
             </div>
             <div className="manipulation-box">
                 <div className="manipulation-button" data-func="volume">
                     {
-                        volume>50?<FontAwesomeIcon onClick={onClickVolumeIcon} icon={faVolumeHigh} />:
-                        (
-                            volume<=0?<FontAwesomeIcon onClick={onClickVolumeIcon} icon={faVolumeMute} />:
-                            <FontAwesomeIcon onClick={onClickVolumeIcon} icon={faVolumeLow} />
-                        )
+                        volume > 50 ? <FontAwesomeIcon onClick={onClickVolumeIcon} icon={faVolumeHigh} /> :
+                            (
+                                volume <= 0 ? <FontAwesomeIcon onClick={onClickVolumeIcon} icon={faVolumeMute} /> :
+                                    <FontAwesomeIcon onClick={onClickVolumeIcon} icon={faVolumeLow} />
+                            )
                     }
                     {
                         toggleVolumeController &&
@@ -525,12 +533,11 @@ const AudioController = observer(() => {
                             </Box>
                         )
                     }
-
                 </div>
-                <div className="manipulation-button" data-func="repeat">
+                <div onClick={() => setIsRepeat()} className={isRepeat ? `manipulation-button on` : `manipulation-button`} data-func="repeat">
                     <FontAwesomeIcon icon={faRepeat} />
                 </div>
-                <div className="manipulation-button" data-func="random-repeat">
+                <div onClick={() => setShuffle()} className={isShuffle ? `manipulation-button on` : `manipulation-button`} data-func="random-repeat">
                     <FontAwesomeIcon icon={faShuffle} />
                 </div>
             </div>

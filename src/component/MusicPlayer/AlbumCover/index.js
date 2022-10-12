@@ -7,6 +7,7 @@ import { faMagnifyingGlass, faBars } from '@fortawesome/free-solid-svg-icons';
  */
 import MusicPlayerStore from '../../../store/MusicPlayerStore';
 import MobileHeader from '../../MobileHeader';
+import Canvas from './Canvas';
 
 const CDRotation = keyframes`
     0%{
@@ -19,6 +20,7 @@ const CDRotation = keyframes`
 
 const AlbumCoverBox = styled.div`
     width:100%;height:100%;
+    position:relative;
     .music-info-box{
         width:100%;height:100%;
         position:relative;
@@ -69,6 +71,11 @@ const AlbumCoverBox = styled.div`
                         animation-duration: 1.6s;
                         animation-iteration-count: infinite;
                         animation-timing-function:linear;
+                        .canvas-wrapper{
+                            position:absolute;
+                            top:0%;left:0;
+                            width:100%;height:100%;
+                        }
                     }
                 }
             }
@@ -135,6 +142,7 @@ const AlbumCover = observer(() => {
             } 
             isPlay={isPlaying} 
         >
+            <Canvas/>
             <div className="music-info-box">
                 <div className='music-box'>
                 </div>
@@ -145,6 +153,7 @@ const AlbumCover = observer(() => {
                         {
                              musicPlayingNow&&
                             (
+                                
                                 <div className='cd-componenet'>
                                     {
                                         <img src={musicPlayingNow.albumImage} alt="album-cover" />

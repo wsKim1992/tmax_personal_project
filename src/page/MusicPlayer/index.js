@@ -69,14 +69,20 @@ const MusicPlayerWrapper = styled.div`
     }
 
     @media screen and (max-width:770px){
-        
+        position:relative;
         .main-contents-container{
             height:74vh;
             .album-cover-container{
                 width:100%;height:100%;
             }
             .playlist-container{
-                display:none;
+                position:absolute;
+                top:10%;right:10px;
+                width:255px;
+                background: #000;
+                z-index: 3;
+                height:auto;
+                max-height: 350px;
             }
         }
         .audio-controller-container{
