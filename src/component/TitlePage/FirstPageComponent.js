@@ -5,6 +5,7 @@ import BackgroundImage1 from '../../static/image/TitlePageimage/4.jpg';
 import BackgroundImage2 from '../../static/image/TitlePageimage/3.jpg';
 import BackgroundImage3 from '../../static/image/TitlePageimage/5.jpg';
 
+import MobileHeader from '../MobileHeader';
 import FirstImageBox from './FirstImageBox';
 import TextComponent from './TextComponent';
 
@@ -133,6 +134,7 @@ const FirstPageComponent = memo(()=>{
     return (
         <EntireContainer>
             <EntireWrapper>
+                <MobileHeader/>
                 <FirstImageBox imgSrc={bgImgArr[index]} ref={imageBoxRef}/>
                 <TextComponent classname={'title-text'} text={['My' , 'Music' , 'Store']}  ref={mainTitleRef}/>
                 <TextComponent classname={'title-text sub-title'} text={['Enjoy\n', 'Your\n', 'Music\n', 'In\n',' Browser!\n']}  ref={subTitleRef}/>

@@ -13,6 +13,7 @@ const MobileHeaderBox = styled.div`
         .header-for-mobile{
             position:absolute;
             top:25px;left:0%;
+            z-index:3;
             width:100%;height:28.5px;
             background:transparent;
             display:flex;flex-direction:row;
@@ -139,7 +140,8 @@ const MobileHeader = memo(() => {
                     <FontAwesomeIcon icon={faBars} />
                 </div>
                 {
-                    pathname===`/${MUSIC_PLAYER}`
+                    (pathname===`/${MUSIC_PLAYER}`||
+                    pathname===`/${TITLE_PAGE}`)
                     &&
                     (
                         <div className="search-box">

@@ -49,5 +49,111 @@ export const TitleComponent = styled.div`
             
         }
     }
-    
+    @media screen and (max-width:770px){
+        .title-text{
+            position:absolute;
+            top:25.5%;left:50%;
+            transform:translateX(-50%);
+            display:flex;
+            justify-content: center;
+            width: 100%;
+            div{
+                span{
+                    display:inline-block;
+                    font-size:58.5px;
+                }    
+            }
+            div+div{
+                margin-left:15.5px;
+            }
+            
+            &.sub-title{
+                div{
+                    span{
+                        font-size:30px;
+                    }
+                }
+                
+            }
+        }
+    }
+    @media screen and (max-width:680px){
+        .title-text{
+            position:absolute;
+            top:25.5%;left:50%;
+            transform:translateX(-50%);
+            display:flex;
+            justify-content: center;
+            width: 100%;
+            div{
+                span{
+                    display:inline-block;
+                    font-size:48.5px;
+                }    
+            }
+            div+div{
+                margin-left:15.5px;
+            }
+            
+            &.sub-title{
+                div{
+                    span{
+                        font-size:23.5px;
+                    }
+                }
+                
+            }
+        }
+    }
+    @media screen and (max-width:560px){
+        .title-text{
+            position:absolute;
+            top:35.5%;
+            display:flex;
+            div{
+                span{
+                    display:inline-block;
+                    font-size:38.5px;
+                }    
+            }
+            div+div{
+                margin-left:15.5px;
+            }
+            
+            &.sub-title{
+                div{
+                    span{
+                        font-size:15.5px;
+                    }
+                }
+                
+            }
+        }
+    }
+    @media screen and (max-width:450px){
+        .title-text{
+            position:absolute;
+            top:35.5%;
+            display:flex;
+            div{
+                margin-left:15.5px;
+                margin-bottom: 5.5px;
+                span{
+                    display:inline-block;
+                    font-size:38.5px;
+                }    
+            }
+            
+            &.sub-title{
+                flex-direction:column;
+
+                div{
+                    span{
+                        font-size:15.5px;
+                    }
+                }
+                
+            }
+        }
+    }
 `;
