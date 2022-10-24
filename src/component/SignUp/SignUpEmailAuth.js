@@ -2,9 +2,10 @@ import React,{useEffect,useCallback,useState,useRef} from 'react';
 import { observer } from 'mobx-react-lite';
 import styled from 'styled-components';
 import useStores from '../../store';
-import { flow } from 'mobx';
+import { useNavigate } from 'react-router-dom';
+import { SIGN_UP,SIGNUP_AUTH_NUMBER} from '../../constant/PagePath';
 
-const SignUpEmailAuthBox = styled.div`
+export const SignUpEmailAuthBox = styled.div`
     width:100%;height:100%;
     padding:15px;
     box-sizing:border-box;
@@ -126,6 +127,8 @@ const SignUpEmailAuth = observer(()=>{
         emailAuthState,emailErrorMessage
     } = useStores().AuthStore;
 
+    const navigate = useNavigate();
+    
     useEffect(()=>{
         if(emailErrorMessage){
             setEmailMessage(emailErrorMessage);
@@ -204,6 +207,10 @@ const SignUpEmailAuth = observer(()=>{
             }
             case 3:{
                 //authemailCallAuthAPI({email,username});
+                navigate(
+                    `/${SIGN_UP}/${SIGNUP_AUTH_NUMBER}`,
+                    {state:{email},replace:true}
+                )
                 return true;
             }
             default:{
@@ -233,7 +240,7 @@ const SignUpEmailAuth = observer(()=>{
             <form className="form" onSubmit={onSubmit}>
                 <div className="form-wrapper">
                     <div className="title-box">
-                        <h2>회원가입</h2>
+                        <h2>회원가입 : 이메일 & 닉네임 설정</h2>
                     </div>
                     <div className="input-wrapper">
                         <h3>
@@ -258,7 +265,7 @@ const SignUpEmailAuth = observer(()=>{
                     </div>
                     <div className="button-box">
                         <button className="button">
-                            이메일 인증
+                            인증 메일 전송
                         </button>
                     </div>
                 </div>
