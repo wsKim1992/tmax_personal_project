@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { SIGN_UP,SIGNUP_EMAIL_AUTH, SIGNUP_AUTH_NUMBER, SINGUP_TYPE_PASSWORD } from '../../constant/PagePath';
 import SignUpEmailAuth from '../../component/SignUp/SignUpEmailAuth';
+import SignAuthNumber from '../../component/SignUp/SignAuthNumber';
 
 const EntireContainer = styled.div`
     width:100%;height:100%;
@@ -50,12 +51,14 @@ function SignUpRouteFunc(){
 
 const SignUp = observer(() => {
     const { pathname } = useLocation();
+
     return (
         <EntireContainer>
             <EntireWrapper>
                 <div className="page-component">
                     <Routes>
                         <Route path={`/${SIGNUP_EMAIL_AUTH}`} element={<SignUpEmailAuth/>}/>
+                        <Route path={`/${SIGNUP_AUTH_NUMBER}`} element={<SignAuthNumber/>}/>
                     </Routes>
                 </div>
                 
