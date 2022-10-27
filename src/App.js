@@ -1,8 +1,7 @@
 import React,{useEffect} from "react";
 import { BrowserRouter, Routes, Route, Navigate,useRoutes } from 'react-router-dom';
 
-import { MUSIC_PLAYER, UPLOAD_PAGE, TITLE_PAGE, SIGN_UP,SIGNUP_EMAIL_AUTH,
-  SIGNUP_AUTH_NUMBER,SINGUP_TYPE_PASSWORD } from './constant/PagePath';
+import { MUSIC_PLAYER, UPLOAD_PAGE, TITLE_PAGE, SIGN_UP} from './constant/PagePath';
 import MusicPlayer from "./page/MusicPlayer";
 import UploadPage from "./page/UploadPage";
 import Layout from "./component/Layout";
