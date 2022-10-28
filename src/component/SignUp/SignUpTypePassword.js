@@ -1,9 +1,9 @@
 import React,{useEffect,useCallback,useRef,useState} from 'react';
 import styled from 'styled-components';
 import useStores from '../../store';
-import {Navigate,useNavigate} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import {observer} from 'mobx-react-lite';
-import {SignUpEmailAuthBox} from './SignUpEmailAuth';
+import {SignUpEmailAuthBox} from './component/SignUpLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
 import {TITLE_PAGE} from '../../constant/PagePath';

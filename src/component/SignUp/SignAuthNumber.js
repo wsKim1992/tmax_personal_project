@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
-import { SignUpEmailAuthBox } from './SignUpEmailAuth';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { SignUpEmailAuthBox } from './component/SignUpLayout';
+import { useNavigate } from 'react-router-dom';
 import useStores from '../../store';
 import { observer } from 'mobx-react-lite';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

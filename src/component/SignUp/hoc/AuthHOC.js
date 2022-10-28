@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Navigate, useLocation } from 'react-router-dom'
 import { SIGN_UP, SIGNUP_EMAIL_AUTH, SIGNUP_AUTH_NUMBER, SIGNUP_TYPE_PASSWORD } from '../../../constant/PagePath';
 import useStores from '../../../store';
@@ -10,8 +10,6 @@ const AuthHOC = (RequestedComponent) => {
             callingEmailAPIError, email, authState
         } = useStores().AuthStore;
         const { pathname } = useLocation();
-        console.log(pathname);
-        console.log(`authState : ${authState}`);
         const RenderedComponent = useMemo(() => {
             switch (pathname) {
                 case `/${SIGN_UP}/${SIGNUP_EMAIL_AUTH}`: {
