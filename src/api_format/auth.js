@@ -11,11 +11,11 @@ export const settingAPIForAuth = (()=>{
         },
         function(error){
             if(error?.response?.status){
-                const {status} = error.response;
+                const {status,data} = error.response;
                 if(400<=status&&status<500){
-                    return Promise.reject({message:'데이터 전송 오류'});
+                    return Promise.reject({message:data.message?data.message:'데이터 전송 오류'});
                 }else if(500<=status){
-                    return Promise.reject({message:"서버 점검중..."});
+                    return Promise.reject({message:data.message?data.message:"서버 점검중..."});
                 }
             }else{
                 const errData = {message:"내부 오류!"};
