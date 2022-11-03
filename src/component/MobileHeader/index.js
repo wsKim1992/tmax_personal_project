@@ -1,9 +1,15 @@
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass, faBars, faList } from '@fortawesome/free-solid-svg-icons';
-import {MUSIC_PLAYER,UPLOAD_PAGE,TITLE_PAGE} from '../../constant/PagePath';
+import {
+    MUSIC_PLAYER, UPLOAD_PAGE, TITLE_PAGE,
+    SIGN_UP, SIGNUP_EMAIL_AUTH, LOG_IN
+} from '../../constant/PagePath';
+import LogOutQuery from '../../react-query/logout';
+import GetUserData from '../../react-query/getUserData';
+import { useCookies } from 'react-cookie';
 
 const MobileHeaderBox = styled.div`
     display:none;
@@ -18,7 +24,7 @@ const MobileHeaderBox = styled.div`
             background:transparent;
             display:flex;flex-direction:row;
             align-items:center;
-            justify-content:${props=>props.pathname===`/${UPLOAD_PAGE}`?'space-between':'space-evenly'};
+            justify-content:${props => props.pathname === `/${UPLOAD_PAGE}` ? 'space-between' : 'space-evenly'};
             &.show-memu{
                 .menubar-container{
                     display:block;
@@ -27,7 +33,7 @@ const MobileHeaderBox = styled.div`
             .menubar-container{
                 display:none;
                 position:absolute;
-                top:105%;left:${props=>props.pathname===`/${UPLOAD_PAGE}`?'0.5%':'5.5%'};;
+                top:105%;left:${props => props.pathname === `/${UPLOAD_PAGE}` ? '0.5%' : '5.5%'};;
                 z-index:2;
                 background-color:#000;
                 width:155.5px;height:auto;
@@ -121,17 +127,47 @@ const MobileHeaderBox = styled.div`
 `;
 
 const MobileHeader = memo(() => {
-    const [showMenuBar,setShowMenuBar] = useState(false);
+    const [showMenuBar, setShowMenuBar] = useState(false);
     const [showSearchBox, setShowSearchBox] = useState(false);
-    const {pathname} = useLocation();
+    const { pathname } = useLocation();
+    const { UserData } = GetUserData();
+    const navigate = useNavigate();
+    const {
+        mutate: logOutMutate,
+        isLoading: logOutLoading,
+        isSuccess: logOutSuccess,
+        isError: logOutErrorFlag,
+        error: logOutError
+    } = LogOutQuery();
 
-    const onClickMenuBar = useCallback((evt)=>{
-        setShowMenuBar(prev=>!prev);
-    },[]);
+    const onClickMenuBar = useCallback((evt) => {
+        setShowMenuBar(prev => !prev);
+    }, []);
 
     const onClickShowSearchBox = useCallback((evt) => {
         setShowSearchBox(prev => !prev);
     }, []);
+
+    useEffect(() => {
+        if(!logOutLoading){
+            if(logOutSuccess){
+                navigate(-1,{replace:true});
+            }else if(logOutErrorFlag){
+                console.error(logOutError);
+                window.alert(logOutError.message);
+            }
+        }
+    }, [
+        logOutLoading,
+        logOutSuccess,
+        logOutErrorFlag,
+        logOutError
+    ])
+
+    const onClickLogOutBtn = useCallback((evt) => {
+        evt.preventDefault();
+        logOutMutate();
+    }, [logOutLoading])
 
     return (
         <MobileHeaderBox pathname={pathname}>
@@ -140,46 +176,74 @@ const MobileHeader = memo(() => {
                     <FontAwesomeIcon icon={faBars} />
                 </div>
                 {
-                    (pathname===`/${MUSIC_PLAYER}`||
-                    pathname===`/${TITLE_PAGE}`)
+                    (pathname === `/${MUSIC_PLAYER}` ||
+                        pathname === `/${TITLE_PAGE}`)
                     &&
                     (
                         <div className="search-box">
                             <p className={`${!showSearchBox ? 'search-input-box' : 'search-input-box show'}`}>
                                 <input id="search-input" type="text" placeholder='검색어를 입력해 주세요' />
                             </p>
-                                <p className="search-button" onClick={onClickShowSearchBox}>
-                                    <FontAwesomeIcon icon={faMagnifyingGlass} />
-                                </p>
+                            <p className="search-button" onClick={onClickShowSearchBox}>
+                                <FontAwesomeIcon icon={faMagnifyingGlass} />
+                            </p>
                         </div>
                     )
                 }
                 {
-                    pathname===`/${UPLOAD_PAGE}`
+                    pathname === `/${UPLOAD_PAGE}`
                     &&
                     (
                         <div className='menubar-box'>
-                            <FontAwesomeIcon icon={faList}/>
-                        </div>   
+                            <FontAwesomeIcon icon={faList} />
+                        </div>
                     )
                 }
                 <div className="menubar-container">
                     <div className='menubar-wrapper'>
-                        <p className={pathname===`/${TITLE_PAGE}`?'menubar-menu on':'menubar-menu'}>
+                        <p className={pathname === `/${TITLE_PAGE}` ? 'menubar-menu on' : 'menubar-menu'}>
                             <Link to={`/${TITLE_PAGE}`}>
                                 Home
                             </Link>
                         </p>
-                        <p className={pathname===`/${MUSIC_PLAYER}`?'menubar-menu on':'menubar-menu'}>
+                        <p className={pathname === `/${MUSIC_PLAYER}` ? 'menubar-menu on' : 'menubar-menu'}>
                             <Link to={`/${MUSIC_PLAYER}`}>
                                 Music Player
                             </Link>
                         </p>
-                        <p className={pathname===`/${UPLOAD_PAGE}`?'menubar-menu on':'menubar-menu'}>
+                        <p className={pathname === `/${UPLOAD_PAGE}` ? 'menubar-menu on' : 'menubar-menu'}>
                             <Link to={`/${UPLOAD_PAGE}`}>
                                 Upload
                             </Link>
                         </p>
+                        {UserData ? (<p onClick={onClickLogOutBtn} className={'menubar-menu'}>
+                            <a href="#">
+                                Log Out
+                            </a>
+                        </p>) : (
+                            <>
+                                <p className={pathname === `/${SIGN_UP}/${SIGNUP_EMAIL_AUTH}` ? 'menubar-menu on' : 'menubar-menu'}>
+                                    <Link to={`/${SIGN_UP}/${SIGNUP_EMAIL_AUTH}`}>
+                                        <span>Sign Up</span>
+                                    </Link>
+                                </p>
+                                <p className={pathname === `/${LOG_IN}` ? 'menubar-menu on' : 'menubar-menu'}>
+                                    <Link to={`/${LOG_IN}`}>
+                                        <span>Log In</span>
+                                    </Link>
+                                </p>
+                            </>
+                        )}
+                        {/* <p className={pathname === `/${SIGN_UP}/${SIGNUP_EMAIL_AUTH}` ? 'menubar-menu on' : 'menubar-menu'}>
+                            <Link to={`/${SIGN_UP}/${SIGNUP_EMAIL_AUTH}`}>
+                                <span>Sign Up</span>
+                            </Link>
+                        </p>
+                        <p className={pathname === `/${LOG_IN}` ? 'menubar-menu on' : 'menubar-menu'}>
+                            <Link to={`/${LOG_IN}`}>
+                                <span>Log In</span>
+                            </Link>
+                        </p> */}
                     </div>
                 </div>
             </div>

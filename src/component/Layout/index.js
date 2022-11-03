@@ -1,7 +1,7 @@
 import React,{useEffect} from 'react';
 import styled from 'styled-components';
 import Header from '../Header';
-
+import GetUserData from '../../react-query/getUserData';
 const EntireLayOutContainer = styled.div`
     width:100%;height:100%;
     min-height:${window.innerHeight}px;
@@ -22,7 +22,7 @@ const EntireLayoutWrapper = styled.div`
 `;
 
 const Layout = ({children})=>{
-
+    const {UserData} = GetUserData();
 
     return (
         <EntireLayOutContainer>

@@ -1,10 +1,12 @@
-import React, { memo, useState, useEffect, useRef, useCallback } from "react";
+import React, { memo, useState, useEffect, useRef, useMemo, useCallback } from "react";
 import styled from 'styled-components'
 import logoImage2 from '../../static/image/logo2.jpg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
-import { MUSIC_PLAYER, UPLOAD_PAGE, TITLE_PAGE } from '../../constant/PagePath';
+import { Link, useNavigate } from 'react-router-dom';
+import { MUSIC_PLAYER, UPLOAD_PAGE, TITLE_PAGE, SIGN_UP, SIGNUP_EMAIL_AUTH, LOG_IN } from '../../constant/PagePath';
+import LogOutQuery from "../../react-query/logout";
+import GetUserData from "../../react-query/getUserData";
 
 const HeaderContainer = styled.div`
     width:100%;height:65.5px;
@@ -90,6 +92,37 @@ const HeaderWrapper = styled.div`
                         }
                         border-bottom:1.5px solid ${props => props.theme.emphasize};
                     }
+                }
+            }
+        }
+        &.auth-menu-container{
+            .menu-wrapper{
+                .menu{
+                    .menu-li{
+                        margin:0 3.5px;
+                        padding:0;
+                        a{
+                            height: auto;
+                            width: auto;
+                            box-sizing: border-box;
+                            border-radius: 4.5px;
+                            background: #FF4D5C;
+                            padding: 10px 15.5px;
+                            span{
+                                font-size:12.5px;
+                            }
+                        }   
+                        &:hover{
+                            a{
+                                background: ${props => props.theme.headerMenuFontColor};
+                                >span{
+                                    color:${props => props.theme.emphasize};
+                                }
+                            }
+                            border-bottom:none;
+                        }
+                    }
+                    
                 }
             }
         }
@@ -212,9 +245,40 @@ const HeaderWrapper = styled.div`
 const Header = memo(() => {
     const searchInputRef = useRef(null);
     const [showSearchInput, setShouwSearchInput] = useState(false);
+
     const onClickSearchButton = useCallback(() => {
         setShouwSearchInput(prev => !prev);
     }, [])
+    const {
+        respData, mutate: logOutMutate,
+        isLoading: logOutLoading, isSuccess,
+        isError, error
+    } = LogOutQuery();
+
+    const {
+        UserData
+    } = GetUserData();
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!logOutLoading) {
+            if (isSuccess) {
+                window.alert("로그아웃 성공 메인 페이지로 이동합니다.");
+                navigate(`/${TITLE_PAGE}`);
+            } else if (isError) {
+                window.alert(error.message);
+            }
+        }
+    }, [
+        logOutLoading, isSuccess,
+        isError, error
+    ])
+
+    const onClickLogOut = useCallback(() => {
+        if (logOutLoading) return false;
+        logOutMutate();
+    }, [logOutLoading])
 
     return (
         <HeaderContainer>
@@ -248,7 +312,35 @@ const Header = memo(() => {
                         </ul>
                     </div>
                 </div>
-                <div className="search-container">
+                <div className="menu-container auth-menu-container">
+                    <div className="menu-wrapper">
+                        <ul className="menu">
+                            {UserData ? (
+                                <>
+                                    <li className="menu-li">
+                                        <a href="#" onClick={onClickLogOut}>
+                                            <span>Log Out</span>
+                                        </a>
+                                    </li>
+                                </>
+                            ) : (
+                                <>
+                                    <li className="menu-li">
+                                        <Link to={`${LOG_IN}`}>
+                                            <span>Log In</span>
+                                        </Link>
+                                    </li>
+                                    <li className="menu-li">
+                                        <Link to={`${SIGN_UP}/${SIGNUP_EMAIL_AUTH}`}>
+                                            <span>Sign Up</span>
+                                        </Link>
+                                    </li>
+                                </>
+                            )}
+                        </ul>
+                    </div>
+                </div>
+                {/* <div className="search-container">
                     <div className="search-wrapper">
                         <div className={`${showSearchInput ? 'search-box on' : 'search-box'}`}>
                             <input ref={searchInputRef} type="text" placeholder="찾으실 곡의 이름을 입력 해주세요" />
@@ -260,7 +352,7 @@ const Header = memo(() => {
                     <div className="">
 
                     </div>
-                </div>
+                </div> */}
             </HeaderWrapper>
         </HeaderContainer>
     )

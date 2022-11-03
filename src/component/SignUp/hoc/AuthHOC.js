@@ -2,6 +2,9 @@ import React, { useMemo } from 'react';
 import { Navigate, useLocation } from 'react-router-dom'
 import { SIGN_UP, SIGNUP_EMAIL_AUTH, SIGNUP_AUTH_NUMBER, SIGNUP_TYPE_PASSWORD } from '../../../constant/PagePath';
 import useStores from '../../../store';
+import GetUserData from '../../../react-query/getUserData';
+import { useCookies } from 'react-cookie';
+import {COOKIE_USER_KEY} from '../../../react-query/keys';
 
 const AuthHOC = (RequestedComponent) => {
     function RenderFunction() {
@@ -10,7 +13,14 @@ const AuthHOC = (RequestedComponent) => {
             callingEmailAPIError, email, authState
         } = useStores().AuthStore;
         const { pathname } = useLocation();
+        const {UserData} = GetUserData();
+        const [cookies,,] = useCookies([COOKIE_USER_KEY]);
+
         const RenderedComponent = useMemo(() => {
+            if(UserData&&cookies.UserData){
+                console.log("should be back")
+                return <Navigate to={-1} replace={true}/>
+            }
             switch (pathname) {
                 case `/${SIGN_UP}/${SIGNUP_EMAIL_AUTH}`: {
                     return <RequestedComponent />
@@ -48,7 +58,8 @@ const AuthHOC = (RequestedComponent) => {
             callingEmailAPI,
             callingEmailAPIError,
             callingEmailAPIMessage,
-            email, pathname
+            email, pathname,
+            UserData,cookies.UserData
         ])
 
         return RenderedComponent;

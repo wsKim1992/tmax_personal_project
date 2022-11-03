@@ -87,7 +87,6 @@ const UploadMusicWrapper = styled.div`
 
 
 const UploadPage = memo(() => {
-    console.log("upload page");
     return (
         <EntireContainer>
             <UploadMusicWrapper>
