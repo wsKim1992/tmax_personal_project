@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {createGlobalStyle,ThemeProvider} from 'styled-components';
-import { Provider } from 'mobx-react';
-import uploadStore from './store/UploadStore';
+import { createGlobalStyle, ThemeProvider } from 'styled-components';
+import { QueryClientProvider } from 'react-query';
+import { CookiesProvider } from 'react-cookie';
+import queryClient from "./react-query/queryClient";
 
 const GlobalStyle = createGlobalStyle`
 :root{
@@ -83,20 +84,24 @@ select{
 `;
 
 const basicTheme = {
-  headerBgColor:'#232323',
-  bodyBgColor:'#1D1D1D',
-  emphasize:'#FF4D5C',
-  headerMenuFontColor:'#FFF'
+	headerBgColor: '#232323',
+	bodyBgColor: '#1D1D1D',
+	emphasize: '#FF4D5C',
+	headerMenuFontColor: '#FFF'
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <GlobalStyle/>
+	<React.StrictMode>
+		<GlobalStyle />
 		<ThemeProvider theme={basicTheme}>
-		<App />
+			<CookiesProvider>
+				<QueryClientProvider client={queryClient}>
+					<App />
+				</QueryClientProvider>
+			</CookiesProvider>
 		</ThemeProvider>
-  </React.StrictMode>
+	</React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

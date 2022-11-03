@@ -1,4 +1,5 @@
 import {settingAPIForAuth} from '../api_format/auth';
+
 export const checkIfEmailExistsAPI = async(data)=>{
     try{
         return await settingAPIForAuth.post('/checkEmailExists',data);
@@ -39,4 +40,21 @@ export const signUpUserAPI = async (data)=>{
         throw new Error(message);
     }
     return {flag,message};
+}
+
+export const logInAPI = async(data)=>{
+    console.log(data);
+    const respData = await settingAPIForAuth.post('/logIn',data);
+    return {...respData};
+}
+
+export const checkSessionAPI = async(token)=>{
+    const config = {headers:{Authorization:token}};
+    const respData = await settingAPIForAuth.post('/check_session',{},config);
+    return {...respData};
+}
+
+export const logOutAPI = async ()=>{
+    const data = await settingAPIForAuth.post('/logout');
+    return {...data};
 }
