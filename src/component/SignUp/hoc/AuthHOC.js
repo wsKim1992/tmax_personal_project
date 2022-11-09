@@ -18,7 +18,6 @@ const AuthHOC = (RequestedComponent) => {
 
         const RenderedComponent = useMemo(() => {
             if(UserData&&cookies.UserData){
-                console.log("should be back")
                 return <Navigate to={-1} replace={true}/>
             }
             switch (pathname) {

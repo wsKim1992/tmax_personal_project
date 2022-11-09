@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import UploadMusicComponent from '../../component/UploadPage/UploadMusicComponent';
 import MusicListComponent from '../../component/UploadPage/MusicListComponent';
 import MobileHeader from '../../component/MobileHeader';
+import LogInAOC from '../../component/LogIn/hoc/LogInAOC'
 
 const EntireContainer = styled.div`
     width:100%;height:100%;
@@ -106,4 +107,4 @@ const UploadPage = memo(() => {
     )
 })
 
-export default UploadPage;
+export default LogInAOC(UploadPage);

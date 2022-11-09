@@ -7,7 +7,6 @@ const errorFunc = (error)=>{
     }else{
         window.alert(error.message);
     }
-    
 }
 
 const queryClient = new QueryClient({

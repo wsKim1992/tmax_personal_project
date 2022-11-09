@@ -23,7 +23,8 @@ const GetUserData = ()=>{
             refetchOnWindowFocus:false,
             retry:2,
             retryDelay:0,
-            staleTime:0,
+            cacheTime:1000*60*5,
+            staleTime:1000*60*3,
             initialData:null,
             enabled:cookies.UserData!==undefined && cookies.UserData!==null,
             onSuccess:(data)=>{
