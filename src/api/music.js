@@ -25,11 +25,22 @@ export const uploadMusicDB = async(data)=>{
 export const getMusicListAPI = async(data)=>{
     try{
         //limit,pageNum
-        return await MusicAxiosObj.get('/getMusicList',data);
+        console.log(data);
+        return await MusicAxiosObj.get(`/getMusicList/${data.limit}/${data.pageNum}`,data)
     }catch(err){
         console.error(err);
         throw new Error(JSON.stringify(
             {...err}
         ))
+    }
+}
+
+export const deleteMusicAPI = async(data)=>{
+    try{
+        console.log(data);
+        return await MusicAxiosObj.post('/deleteMusic',data);
+    }catch(err){
+        console.error(err);
+        throw new Error(JSON.stringify({...err}));
     }
 }

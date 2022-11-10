@@ -20,6 +20,9 @@ const LogInQuery = ()=>{
                 //queryClient.setQueryData([USER_KEY],{...data.userInfo});
                 queryClient.invalidateQueries([USER_KEY]);
             },
+            onError:(err)=>{
+                queryClient.invalidateQueries([USER_KEY]);
+            }
         }
     )
 

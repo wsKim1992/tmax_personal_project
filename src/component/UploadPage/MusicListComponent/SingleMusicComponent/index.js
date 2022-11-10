@@ -1,8 +1,10 @@
-import React,{memo} from 'react';
+import React,{memo, useCallback, useEffect} from 'react';
 import styled from 'styled-components';
-import SampleAlbumCoverImage from '../../../../static/image/sample/album_cover.jpg';
+//import SampleAlbumCoverImage from '../../../../static/image/sample/album_cover.jpg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faTrash} from '@fortawesome/free-solid-svg-icons';
+import DeleteMusicMutate from '../../../../react-query/mutateDeleteMusic';
+
 const SingleMusicContainer = styled.div`
     width:90.5%;height:65.5px;
     box-sizing:border-box;
@@ -72,24 +74,56 @@ const SingleMusicContainer = styled.div`
     }
 `;
 
-const SingleMusicComponent = memo(()=>{
+const SingleMusicComponent = memo(({data})=>{
+    const {
+        DeleteMusicMutateFn,
+        DeleteMusicLoading,
+        DeleteMusicError,
+        DeleteMusicSuccess,
+        DeleteMusicErrorObj
+    } = DeleteMusicMutate();
+    
+    useEffect(()=>{
+        if(!DeleteMusicLoading){
+            if(DeleteMusicSuccess){
+                window.alert("삭제 완료!!");
+            }else if(DeleteMusicError){
+                console.error(DeleteMusicErrorObj);
+                window.alert(DeleteMusicErrorObj.message);
+            }
+        }
+    },[
+        DeleteMusicLoading,
+        DeleteMusicError,
+        DeleteMusicSuccess,
+        DeleteMusicErrorObj
+    ])
+
+    const onClickDelete = useCallback((evt)=>{
+        if(DeleteMusicLoading) return false;
+        const {currentTarget:{dataset}} = evt;
+        const {musicid} = dataset;
+        console.log(musicid);
+        DeleteMusicMutateFn({musicId:musicid,url:data.url,albumCoverUrl:data.albumCoverUrl})
+    },[DeleteMusicLoading]);
+
     return (
         <SingleMusicContainer >
             <div className="singleMusic-wrapper">
                 <div className='singleMusic-box'>
                     <p className="image-box">
-                        <img src={SampleAlbumCoverImage} alt="Album-Cover"/>
+                        <img src={`/assets/albumImage/${data.albumCoverUrl}`} alt="Album-Cover"/>
                     </p>
                     <div className="text-box">
                         <p className="title">
-                            Eclipse
+                            {data.title}
                         </p>
                         <p className="author">
-                            Jim Yosef
+                            {data.artist}
                         </p>
                     </div>
                     <div className="delete-button-box">
-                        <p className='delete-button'>
+                        <p onClick={onClickDelete} className='delete-button' data-musicid={data.musicId}>
                             <FontAwesomeIcon icon={faTrash}/>
                         </p>
                     </div>

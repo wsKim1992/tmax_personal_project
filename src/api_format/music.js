@@ -24,7 +24,7 @@ export const MusicAxiosObj = (()=>{
                         }
                     }
                 }else if(500<=status){
-                    return Promise.reject({message:data.message?data.message:"서버 점검중..."});
+                    return Promise.reject({errorStatus:2,message:data.message?data.message:"서버 점검중..."});
                 }
             }else{
                 const errData = {message:"내부오류!"};
@@ -36,7 +36,7 @@ export const MusicAxiosObj = (()=>{
 })();
 
 export const UploadFileAxiosObj = (()=>{
-    const axiosInstance = axios.create({withCredentials:true,baseURL:'http://localhost:3001/music'});
+    const axiosInstance = axios.create({withCredentials:true,baseURL:'/music'});
     axiosInstance.defaults.headers["Content-Type"]='multipart/form-data';
     axiosInstance.defaults.timeout=9900;
     axiosInstance.interceptors.response.use(

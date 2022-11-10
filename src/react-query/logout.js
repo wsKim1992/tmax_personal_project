@@ -1,6 +1,6 @@
 import {useMutation,useQueryClient} from 'react-query';
 import { logOutAPI } from '../api/auth';
-import { USER_KEY,COOKIE_USER_KEY } from './keys';
+import { USER_KEY,COOKIE_USER_KEY,MUSICLIST } from './keys';
 import { useCookies } from 'react-cookie';
 
 const LogOutQuery = ()=>{
@@ -11,6 +11,11 @@ const LogOutQuery = ()=>{
         {
             onSuccess:(respData)=>{
                 removeCookie([COOKIE_USER_KEY],{path:'/'});
+                queryClient.invalidateQueries([USER_KEY]);
+                queryClient.removeQueries([MUSICLIST]);
+            },
+            onError:(err)=>{
+                console.log(err);
                 queryClient.invalidateQueries([USER_KEY]);
             }
         }

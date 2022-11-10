@@ -26,6 +26,7 @@ const GetUserData = ()=>{
             cacheTime:1000*60*5,
             staleTime:1000*60*3,
             initialData:null,
+            keepPreviousData:true,
             enabled:cookies.UserData!==undefined && cookies.UserData!==null,
             onSuccess:(data)=>{
                 queryClient.setQueryData([USER_KEY],data);

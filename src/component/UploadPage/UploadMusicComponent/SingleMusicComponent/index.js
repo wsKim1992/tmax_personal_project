@@ -1,4 +1,4 @@
-import React, { memo, useRef, useCallback, useState, useEffect } from "react";
+import React, { useRef, useCallback, useState, useEffect } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRotate, faPlay, faStop, faPlus, faMinus, faVolumeLow } from '@fortawesome/free-solid-svg-icons';
@@ -10,9 +10,11 @@ import { observer } from 'mobx-react-lite';
 import UploadStore from '../../../../store/UploadStore';
 import { useCookies } from 'react-cookie';
 import { USER_KEY, COOKIE_USER_KEY } from '../../../../react-query/keys';
-import { uploadFileAPI,uploadMusicDB } from '../../../../api/music';
+import { uploadFileAPI, uploadMusicDB } from '../../../../api/music';
 import { useNavigate } from "react-router-dom";
 import { LOG_IN } from "../../../../constant/PagePath";
+import { useQueryClient } from "react-query";
+import MutateMusicList from '../../../../react-query/mutateMusicList'
 
 const UploadedMusicBox = styled.div`
     width:100%;
@@ -362,11 +364,44 @@ const SingleMusicComponent = observer(({ idx, musicInfo }) => {
     const [cookies, ,] = useCookies([COOKIE_USER_KEY]);
 
     //final data to send
-    const [audioFilename,setAudioFilename] = useState(null);
-    const [albumFilename,setAlbumFilename] = useState(null);
+    const [audioFilename, setAudioFilename] = useState(null);
+    const [albumFilename, setAlbumFilename] = useState(null);
 
     const { deleteSingleMusicToBeUploaded } = UploadStore;
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const {
+        MutateMusicListFn,
+        MutateMusicListLoading,
+        MutateMusicListError,
+        MutateMusicListSuccess,
+        MutateMusicListErrorObj } = MutateMusicList();
+
+    useEffect(() => {
+        if (!MutateMusicListLoading) {
+            if (MutateMusicListSuccess) {
+                setUploadState(0);
+                deleteSingleMusicToBeUploaded(musicInfo.key);
+            } else if (MutateMusicListError) {
+                console.error(MutateMusicListError);
+                setUploadState(0);
+                setAudioFilename(null);
+                setAlbumFilename(null);
+                /* const { message, errorStatus } = JSON.parse(MutateMusicListError.message);
+                
+                window.alert(message);
+                if (errorStatus === 0) {
+                    queryClient.invalidateQueries([USER_KEY]);
+                    navigate(`/${LOG_IN}`, { replace: true });
+                } */
+            }
+        }
+    }, [
+        MutateMusicListError,
+        MutateMusicListSuccess,
+        MutateMusicListErrorObj,
+        MutateMusicListLoading
+    ])
 
     useEffect(() => {
         if (uploadState === 1) {
@@ -379,12 +414,13 @@ const SingleMusicComponent = observer(({ idx, musicInfo }) => {
                     setUploadState(2);
                     setAudioFilename(respData.filename);
                     return respData;
-                }catch(err){
+                } catch (err) {
                     setUploadState(0);
-                    const {message,errorStatus}=JSON.parse(err.message);
+                    const { message, errorStatus } = JSON.parse(err.message);
                     window.alert(message);
-                    if(errorStatus===0){
-                        navigate(`/${LOG_IN}`,{replace:true});
+                    if (errorStatus === 0) {
+                        queryClient.invalidateQueries([USER_KEY]);
+                        navigate(`/${LOG_IN}`, { replace: true });
                     }
                 }
             })(formData)
@@ -398,22 +434,24 @@ const SingleMusicComponent = observer(({ idx, musicInfo }) => {
                     setAlbumFilename(respData.filename);
                     setUploadState(3);
                     return respData;
-                }catch(err){
-                    const {message,errorStatus}=JSON.parse(err.message);
+                } catch (err) {
+                    const { message, errorStatus } = JSON.parse(err.message);
                     setUploadState(0);
                     setAudioFilename(null);
                     window.alert(message);
-                    if(errorStatus===0){
-                        navigate(`/${LOG_IN}`,{replace:true});
+                    if (errorStatus === 0) {
+                        queryClient.invalidateQueries([USER_KEY]);
+                        navigate(`/${LOG_IN}`, { replace: true });
                     }
                 }
             })(formData)
-        }else if(uploadState===3){
+        } else if (uploadState === 3) {
             const dataToSend = {
-                title:albumFilename,url:audioFilename,
-                genre:Genre,artist:singer,size:musicInfo.size
+                title, url: audioFilename,albumCoverUrl:albumFilename,
+                genre: Genre, artist: singer, size: musicInfo.size
             };
-            (async(data)=>{
+            MutateMusicListFn(dataToSend);
+            /* (async(data)=>{
                 try{
                     const respData = await uploadMusicDB(data);
                     console.log(respData);
@@ -426,17 +464,18 @@ const SingleMusicComponent = observer(({ idx, musicInfo }) => {
                     const {message,errorStatus}=JSON.parse(err.message);
                     window.alert(message);
                     if(errorStatus===0){
+                        queryClient.invalidateQueries([USER_KEY]);
                         navigate(`/${LOG_IN}`,{replace:true});
                     }
                 }
-            })(dataToSend)
+            })(dataToSend) */
         }
     }, [
         albumCoverFile,
         cookies.UserData,
         title, uploadState,
-        Genre,albumFilename,
-        audioFilename,singer
+        Genre, albumFilename,
+        audioFilename, singer
     ]);
 
     const onPlayAudio = useCallback((evt) => {
@@ -566,7 +605,7 @@ const SingleMusicComponent = observer(({ idx, musicInfo }) => {
             if (title === '' || singer === '' || albumName === '') {
                 throw new Error('form의 내용을 모두 채워 주세요!');
             } else {
-                if(!albumCoverFile){
+                if (!albumCoverFile) {
                     throw new Error('엘범 이미지를 올려 주세요!');
                 }
                 setUploadState(1);
