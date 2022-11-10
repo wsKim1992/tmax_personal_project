@@ -5,7 +5,7 @@ import {useCookies} from 'react-cookie';
 import { COOKIE_USER_KEY, USER_KEY } from '../../../react-query/keys';
 import LoadingComponent from '../../LoadingComponent';
 import {LOG_IN} from '../../../constant/PagePath';
-import LogOutQuery from '../../../react-query/logout';
+//import LogOutQuery from '../../../react-query/logout';
 
 const LogInAOC = (ChildComponent)=>{
     function RenderComponentFunc(){
@@ -20,7 +20,7 @@ const LogInAOC = (ChildComponent)=>{
         const [cookies,,] = useCookies([COOKIE_USER_KEY]);
         const {pathname} = useLocation();
         const navigate = useNavigate();
-        const {mutate:logOutMutate} = LogOutQuery();
+        //const {mutate:logOutMutate} = LogOutQuery();
 
         useEffect(()=>{
             const loadingFlag = loadingUserData || fetchingUserData;
@@ -46,7 +46,10 @@ const LogInAOC = (ChildComponent)=>{
         ]);
 
         useEffect(()=>{
-            if(AOCState===1){navigate(-1,{replace:true});}
+            if(AOCState===1){
+                pathname!==`/${LOG_IN}`&&window.alert("로그인을 해주세요!");
+                pathname!==`/${LOG_IN}`?navigate(`/${LOG_IN}`,{replace:true}):navigate(-1,{replace:true});
+            }
         },[AOCState]);
 
         return (

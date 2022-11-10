@@ -24,7 +24,6 @@ const convertFileSizeIntoStr = (fileObj, size, sizeInMeasurement) => {
             fSize /= 1024;
             j += 1;
         }
-
         fSize = `${Math.round(fSize * 100) / 100} ${measurementArr[j]}`;
         return { measurement: measurementArr[j], memorySize: fSize };
     }
@@ -40,7 +39,7 @@ const onDropFiles = async (dataTransfer, sizeLimit, sizeLimitMB) => {
             if (itemObj.isFile) {
                 itemObj.file(file => {
                     const { name, type } = file;
-                    console.log(file.type.match(/audio/g));
+                    console.log(file.value);
                     if (file.type.match(/audio/g)) {
                         const {
                             measurement,
@@ -112,7 +111,7 @@ const UploadMusicInput = observer(() => {
                 })
 
                 fileArr = await Promise.all(fileArr.map((ele,idx) => {
-                    //console.log(ele);
+                    console.log(ele);
 
                     sizeLimit.current = sizeLimitNB.current * 1024 * 1024
                     const { name, type } = ele;
@@ -129,7 +128,7 @@ const UploadMusicInput = observer(() => {
                         fileReader.readAsDataURL(ele);
                         fileReader.onload = async (e) => {
                             const url = e.target.result;
-                            resolve({ ...data, url });
+                            resolve({ ...data, url ,file:ele});
                         }
                     })
                 }));
