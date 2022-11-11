@@ -53,8 +53,8 @@ class MusicPlayerStoreClass{
     setAudioSrc(musicInfo){
         if(musicInfo){
             this.musicPlayingNow=musicInfo;
-            const {src}=musicInfo;
-            this.audioObj = new Audio(src);
+            const {url}=musicInfo;
+            this.audioObj = new Audio(`/assets/music/${url}`);
             !this.audioContext&&(this.audioContext = new AudioContext());
             !this.audioAnalyzer&&(this.audioAnalyzer = this.audioContext.createAnalyser());
             !this.audioAnalyzer&&(this.audioAnalyzer.fftSize = 2048);

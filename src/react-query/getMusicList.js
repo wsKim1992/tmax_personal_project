@@ -8,7 +8,6 @@ const GetMusicList = () => {
     const queryClient = useQueryClient();
     const [cookies, ,] = useCookies([COOKIE_USER_KEY]);
     const limit = LIMIT_NUMBER_OF_MUSICLIST;
-    console.log(`limit : ${limit}`);
     const {
         data: MusicListData,
         isLoading: loadingMusicListData,
@@ -17,7 +16,8 @@ const GetMusicList = () => {
         error: musicListError,
         fetchNextPage,
         hasNextPage,
-        isFetchingNextPage
+        isFetchingNextPage,
+        isSuccess:isMusicListSuccess
     } = useInfiniteQuery(
         [MUSICLIST],
         async({pageParam=1}) => {
@@ -61,6 +61,7 @@ const GetMusicList = () => {
         musicListError,
         fetchNextPage,
         hasNextPage,
+        isMusicListSuccess,
         isFetchingNextPage
     }
 }
