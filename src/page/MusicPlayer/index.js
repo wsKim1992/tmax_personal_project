@@ -7,6 +7,7 @@ import { observer } from 'mobx-react-lite';
 import MusicPlayerStore from '../../store/MusicPlayerStore';
 /* import SampleMusic from '../../static/sample_music/Jim Yosef - Speed.mp3';
 import SampleAlbumCover from '../../static/image/sample/album_cover.jpg'; */
+import LogInAOC from '../../component/LogIn/hoc/LogInAOC';
 
 const MusicPlayerContainer = styled.div`
     width:100%;height:100%;
@@ -130,4 +131,4 @@ const MusicPlayer = observer(() => {
     )
 })
 
-export default MusicPlayer;
+export default LogInAOC(MusicPlayer);

@@ -12,7 +12,6 @@ import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import { observer } from "mobx-react-lite";
 import MusicPlayerStore from '../../../store/MusicPlayerStore';
-import { findElement } from '../../../util/utilFunc';
 
 const AudioControllerBox = styled.div`
     width:100%;height:100%;
@@ -412,6 +411,7 @@ const AudioController = observer(() => {
 
     const onClickDurationComponent = useCallback((evt) => {
         if (audioObj) {
+            console.log(audioObj.buffered);
             const { currentTarget } = evt;
             const { nativeEvent: { offsetX } } = evt;
             const durationBarStyle = document.defaultView.getComputedStyle(currentTarget);
@@ -494,7 +494,7 @@ const AudioController = observer(() => {
                 <p className="music-thumbnail">
                     {
                         musicPlayingNow &&
-                        <img src={musicPlayingNow.albumImage} alt="album-cover-page" />
+                        <img src={`/assets/albumImage/${musicPlayingNow.albumCoverUrl}`} alt="album-cover-page" />
                     }
                 </p>
                 <div className="music-text-info">

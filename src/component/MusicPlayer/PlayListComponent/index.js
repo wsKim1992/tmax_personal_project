@@ -1,4 +1,4 @@
-import React,{useEffect,useCallback} from "react";
+import React,{useEffect,useCallback,useState} from "react";
 import styled from "styled-components";
 import { observer } from "mobx-react-lite";
 import MusicPlayerStore from "../../../store/MusicPlayerStore";
@@ -7,6 +7,7 @@ import SampleMusic2 from '../../../static/sample_music/Immediate Music - Electri
 import sampleAlbumCoverImage1 from '../../../static/image/sample/album_cover.jpg';
 import sampleAlbumCoverImage2 from '../../../static/image/sample/album_cover_2.jpg';
 import {findElement} from '../../../util/utilFunc';
+import GetMusicList from '../../../react-query/getMusicList';
 
 const PlayListComponentBox = styled.div`
     width:100%;height:100%;
@@ -79,30 +80,65 @@ const PlayListComponentBox = styled.div`
 
 const hardCodedData = [
     {
-        src:SampleMusic1,
-        albumImage:sampleAlbumCoverImage1,
+        url:SampleMusic1,
+        albumCoverUrl:sampleAlbumCoverImage1,
         title:'Speed',
         artist:'Jim Yosef',
-        id:`${Date.now()}_1`,
-        duration:'03:24'
+        musicId:`${Date.now()}_1`,
+        genre:'electronic'
     },
     {
-        src:SampleMusic2,
-        albumImage:sampleAlbumCoverImage2,
+        url:SampleMusic2,
+        albumCoverUrl:sampleAlbumCoverImage2,
         title:'Electric Romeo',
         artist:'Europa',
-        id:`${Date.now()}_2`,
-        duration:'03:24'
+        musicId:`${Date.now()}_2`,
+        genre:'electronic'
     }
 ]
 
 const PlayListComponent = observer(()=>{
-    const {myMusicList,setMyMusicList,setAudioSrc,setShowMyPlayList,musicPlayingNow,showMyPlayList} = MusicPlayerStore;
     
+    const [allowShowList,setAllowShowList] =useState(false);
+    const {myMusicList,setMyMusicList,setAudioSrc,
+        setShowMyPlayList,musicPlayingNow,showMyPlayList
+    } = MusicPlayerStore;
+    
+    const {
+        MusicListData,
+        loadingMusicListData,
+        fetchingMusicListData,
+        isMusicListError,
+        musicListError,
+        isMusicListSuccess,
+        fetchNextPage,
+    } = GetMusicList();
+
     useEffect(()=>{
-        setMyMusicList(hardCodedData);
-        
-    },[]);
+        fetchNextPage();
+    },[])
+
+    useEffect(()=>{
+        const isLoading = fetchingMusicListData||loadingMusicListData;
+        if(!isLoading){
+            if(isMusicListError){
+                console.error(musicListError);
+                window.alert(musicListError)
+            }else if(isMusicListSuccess&&MusicListData.pages){
+                const arr = MusicListData.pages.map((page,i)=>(
+                    page.result.map((v,subIdx)=>v)))[0];
+                    console.log(arr);
+                setMyMusicList(arr);
+            }
+        }
+    },[
+        MusicListData,
+        loadingMusicListData,
+        fetchingMusicListData,
+        isMusicListError,
+        isMusicListSuccess,
+        musicListError
+    ])
 
     const onClickUl = useCallback((evt)=>{
         if(myMusicList){
@@ -110,7 +146,9 @@ const PlayListComponent = observer(()=>{
             const element = findElement(target,'li','ul');
             if(element){
                 const {dataset:{index,key}}=element; 
-                const musicInfo = myMusicList.find(v=>v.id===key);
+                console.log(key);
+                const musicInfo = myMusicList.find(v=>v.musicId===Number(key));
+                console.log(musicInfo.url);
                 setAudioSrc({...musicInfo,index:parseInt(index)});
             }
         }
@@ -122,11 +160,17 @@ const PlayListComponent = observer(()=>{
             <div className="playListComponent">
                 <ul className="ul" onClick={onClickUl}>
                     {
+                        (
+                            !loadingMusicListData
+                            &&!fetchingMusicListData
+                            &&!isMusicListError
+                            &&MusicListData?.pages
+                        )&&
                         myMusicList&&
                         myMusicList.map((v,i)=>(
-                            <li data-index={i} data-key={v.id} key={v.id} className={`${i===musicPlayingNow?.index?'li on':'li'}`}>
+                            <li data-index={i} data-key={v.musicId} key={v.musicId} className={`${i===musicPlayingNow?.index?'li on':'li'}`}>
                                 <p className="album-cover-thumbnail-box">
-                                    <img src={v.albumImage} alt="album-cover-thumbnail"/>
+                                    <img src={`/assets/albumImage/${v.albumCoverUrl}`} alt="album-cover-thumbnail"/>
                                 </p>
                                 <div className="music-text-info-box">
                                     <p className="music-title">
@@ -138,7 +182,7 @@ const PlayListComponent = observer(()=>{
                                 </div>
                                 <div className="playtime-duration-box">
                                     <p className="playtime-duration">
-                                        {v.duration}
+                                        {v.genre}
                                     </p>
                                 </div>
                             </li>

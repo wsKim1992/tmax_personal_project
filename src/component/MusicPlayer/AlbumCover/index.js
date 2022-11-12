@@ -137,7 +137,7 @@ const AlbumCover = observer(() => {
         <AlbumCoverBox 
             albumImage={
                 musicPlayingNow?
-                musicPlayingNow.albumImage:
+                `/assets/albumImage/${musicPlayingNow.albumCoverUrl}`:
                 'linear-gradient(215deg,rgba(0,0,0,0),#1D1D1D)'
             } 
             isPlay={isPlaying} 
@@ -156,7 +156,7 @@ const AlbumCover = observer(() => {
                                 
                                 <div className='cd-componenet'>
                                     {
-                                        <img src={musicPlayingNow.albumImage} alt="album-cover" />
+                                        <img src={`/assets/albumImage/${musicPlayingNow.albumCoverUrl}`} alt="album-cover" />
                                     }
                                 </div>
                             )
