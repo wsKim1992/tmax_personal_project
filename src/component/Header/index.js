@@ -276,6 +276,7 @@ const Header = memo(() => {
     ])
 
     const onClickLogOut = useCallback(() => {
+        
         if (logOutLoading) return false;
         logOutMutate();
     }, [logOutLoading])

@@ -15,6 +15,19 @@ const PlayListComponentBox = styled.div`
     padding:10px;
     .playListComponent{
         width:100%;height:100%;
+        &::-webkit-scrollbar{
+            width:10px;
+        }
+        &::-webkit-scrollbar-track{
+            width:10px;
+            background-color:#000;
+            border-radius:4.5px;
+        }
+        &::-webkit-scrollbar-thumb{
+            border-radius:4.5px;
+            background:#454545;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        }
         .ul{
             width:100%;height:100%;
             .li{
@@ -99,7 +112,6 @@ const hardCodedData = [
 
 const PlayListComponent = observer(()=>{
     
-    const [allowShowList,setAllowShowList] =useState(false);
     const {myMusicList,setMyMusicList,setAudioSrc,
         setShowMyPlayList,musicPlayingNow,showMyPlayList
     } = MusicPlayerStore;

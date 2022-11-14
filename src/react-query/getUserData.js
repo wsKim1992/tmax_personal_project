@@ -20,18 +20,21 @@ const GetUserData = ()=>{
             refetchOnMount:true,
             refetchOnReconnect:true,
             refetchIntervalInBackground:false,
-            refetchOnWindowFocus:false,
-            retry:2,
+            refetchOnWindowFocus:true,
             retryDelay:0,
-            cacheTime:1000*60*5,
-            staleTime:1000*60*3,
-            initialData:null,
+            cacheTime:1000*60*60*24,
+            staleTime:1000*60*10,
+            initialData:localStorage.getItem('UserData')?localStorage.getItem('UserData'):null,
             keepPreviousData:true,
-            enabled:cookies.UserData!==undefined && cookies.UserData!==null,
+            enabled:(cookies.UserData!==undefined && cookies.UserData!==null),
             onSuccess:(data)=>{
+                console.log('success');
+                localStorage.setItem('UserData',JSON.stringify(data));
+                console.log(data);
                 queryClient.setQueryData([USER_KEY],data);
             },
             onError:(err)=>{
+                console.log('error')
                 console.error(err);
                 queryClient.setQueryData([USER_KEY],null);
                 removeCookie([COOKIE_USER_KEY],{path:'/'});
