@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,useRef,useCallback } from 'react';
 import styled from 'styled-components';
 import AudioController from '../../component/MusicPlayer/AudioController';
 import AlbumCover from '../../component/MusicPlayer/AlbumCover';
@@ -8,6 +8,7 @@ import MusicPlayerStore from '../../store/MusicPlayerStore';
 /* import SampleMusic from '../../static/sample_music/Jim Yosef - Speed.mp3';
 import SampleAlbumCover from '../../static/image/sample/album_cover.jpg'; */
 import LogInAOC from '../../component/LogIn/hoc/LogInAOC';
+import GetMusicList from '../../react-query/getMusicList';
 
 const MusicPlayerContainer = styled.div`
     width:100%;height:100%;
@@ -100,10 +101,29 @@ const MusicPlayerWrapper = styled.div`
 
 const MusicPlayer = observer(() => {
     const {setAudioSrc} = MusicPlayerStore;
+    const playlistContainerRef = useRef(null);
+    const {
+        MusicListData,
+        fetchNextPage
+    } = GetMusicList();
 
     useEffect(()=>{
         setAudioSrc(null);
     },[])
+
+    const scrollEventFunction=useCallback((event)=>{
+        const style = document.defaultView.getComputedStyle(playlistContainerRef.current)
+        const {scrollTop,scrollHeight} = playlistContainerRef.current;
+        if(Math.ceil(scrollTop+parseFloat(style.height))>=scrollHeight){
+            console.log('fetchNextQuery');
+            fetchNextPage();
+        }
+    },[])
+
+    useEffect(()=>{
+        fetchNextPage();
+        playlistContainerRef.current.addEventListener('scroll',scrollEventFunction);
+    },[]);
 
     return (
         <MusicPlayerContainer>
@@ -114,7 +134,7 @@ const MusicPlayer = observer(() => {
                             <AlbumCover />
                         </div>
                     </div>
-                    <div className='playlist-container'>
+                    <div ref={playlistContainerRef} className='playlist-container'>
                         <div className='playlist-wrapper'>
                             <PlayListComponent />
                         </div>

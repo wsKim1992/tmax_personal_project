@@ -50,7 +50,7 @@ export const logInAPI = async(data)=>{
 
 export const checkSessionAPI = async(token)=>{
     const config = {headers:{Authorization:token}};
-    const respData = await settingAPIForAuth.post('/check_session',{},config);
+    const respData = await settingAPIForAuth.post('/check_session',{},{...config});
     return {...respData};
 }
 

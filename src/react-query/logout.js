@@ -13,6 +13,7 @@ const LogOutQuery = ()=>{
                 removeCookie([COOKIE_USER_KEY],{path:'/'});
                 queryClient.invalidateQueries([USER_KEY]);
                 queryClient.removeQueries([MUSICLIST]);
+                localStorage.removeItem('UserData');
             },
             onError:(err)=>{
                 console.log(err);

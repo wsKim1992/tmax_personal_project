@@ -13,6 +13,7 @@ const LogInQuery = ()=>{
         (data)=>logInAPI(data),
         {
             onSuccess:(data)=>{
+                console.log(data);
                 setCookie(COOKIE_USER_KEY,data.token,{
                     path:"/",
                     expires:expireTime
