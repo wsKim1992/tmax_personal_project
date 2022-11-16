@@ -387,13 +387,13 @@ const SingleMusicComponent = observer(({ idx, musicInfo }) => {
                 setUploadState(0);
                 setAudioFilename(null);
                 setAlbumFilename(null);
-                /* const { message, errorStatus } = JSON.parse(MutateMusicListError.message);
+                const { message, errorStatus } = JSON.parse(MutateMusicListError.message);
                 
                 window.alert(message);
                 if (errorStatus === 0) {
                     queryClient.invalidateQueries([USER_KEY]);
                     navigate(`/${LOG_IN}`, { replace: true });
-                } */
+                }
             }
         }
     }, [

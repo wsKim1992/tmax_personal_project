@@ -36,7 +36,7 @@ export const MusicAxiosObj = (()=>{
 })();
 
 export const UploadFileAxiosObj = (()=>{
-    const axiosInstance = axios.create({withCredentials:true,baseURL:'/music'});
+    const axiosInstance = axios.create({withCredentials:true,baseURL:'http://localhost:3001/music'});
     axiosInstance.defaults.headers["Content-Type"]='multipart/form-data';
     axiosInstance.defaults.timeout=9900;
     axiosInstance.interceptors.response.use(
