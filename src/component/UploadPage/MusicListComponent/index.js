@@ -41,7 +41,8 @@ const MusicListComponent = memo(() => {
         fetchingMusicListData,
         isMusicListError,
         musicListError,
-        fetchNextPage
+        fetchNextPage,
+        hasNextPage
     }=GetMusicList();
 
     const EntireWrapperRef = useRef(null);
@@ -49,16 +50,18 @@ const MusicListComponent = memo(() => {
     const scrollEventFunction=useCallback((event)=>{
         const style = document.defaultView.getComputedStyle(EntireWrapperRef.current)
         const {scrollTop,scrollHeight} = EntireWrapperRef.current;
-        if(Math.ceil(scrollTop+parseFloat(style.height))>=scrollHeight){
-            console.log('fetchNextQuery')
+        console.log(`has Next Page : ${hasNextPage}`);
+        if(Math.ceil(scrollTop+parseFloat(style.height))>=scrollHeight&&hasNextPage){
             fetchNextPage();
         }
-    },[])
+    },[hasNextPage])
     
+    useEffect(()=>{
+        EntireWrapperRef.current.addEventListener("scroll",scrollEventFunction);
+    },[hasNextPage]);
 
     useEffect(()=>{
         fetchNextPage();
-        EntireWrapperRef.current.addEventListener("scroll",scrollEventFunction);
     },[])
 
 

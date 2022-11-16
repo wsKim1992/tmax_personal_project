@@ -7,14 +7,14 @@ const LogInQuery = ()=>{
     const queryClient = useQueryClient();
     const now = new Date();
     let expireTime = new Date();
-    expireTime.setMinutes(now.getMinutes()+5);
-    const [,setCookie,] = useCookies([COOKIE_USER_KEY]);
+    expireTime.setDate(now.getDate()+1);
+    console.log(expireTime);
+    const [cookies,setCookie,] = useCookies([COOKIE_USER_KEY]);
     const {data:respData,isLoading,mutate,isSuccess,isError,error} = useMutation(
         (data)=>logInAPI(data),
         {
             onSuccess:(data)=>{
-                console.log(data);
-                setCookie(COOKIE_USER_KEY,data.token,{
+                setCookie([COOKIE_USER_KEY],data.token,{
                     path:"/",
                     expires:expireTime
                 })

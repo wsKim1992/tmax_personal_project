@@ -16,6 +16,8 @@ const convertFileSizeIntoStr = (fileObj, size, sizeInMeasurement) => {
     }
     sizeLimit = `${Math.round(sizeLimit * 100) / 100} ${measurementArr[i]}`;
     let fSize = sizeInByte;
+    console.log(size);
+    console.log(fSize);
     if (fSize > size) {
         return { measurement: null, memorySize: null };
     } else {
@@ -77,7 +79,7 @@ const onDropFiles = async (dataTransfer, sizeLimit, sizeLimitMB) => {
 
 const UploadMusicInput = observer(() => {
     const [isDraggedOver, setIsDraggedOver] = useState(false);
-    const sizeLimitNB = useRef(100);
+    const sizeLimitNB = useRef(5);
     const sizeLimit = useRef(sizeLimitNB.current * 1024 * 1024);
     const { musicListToBeUpload, updateMusiclistToBeUpload } = UploadStore;
 
@@ -113,24 +115,30 @@ const UploadMusicInput = observer(() => {
                 fileArr = await Promise.all(fileArr.map((ele,idx) => {
                     console.log(ele);
 
-                    sizeLimit.current = sizeLimitNB.current * 1024 * 1024
+                    //sizeLimit.current = sizeLimitNB.current * 1024 * 1024
                     const { name, type } = ele;
                     if (type.search(/audio/g) === -1) {
+                        fileArr=null;
                         throw new Error('오직 음원 파일만 업로드 가능합니다!');
                     }
                     const { measurement, memorySize } = convertFileSizeIntoStr(ele, sizeLimit.current, sizeLimitNB.current);
-                    if (!measurement || !memorySize) {
-                        throw new Error('100MB 이상의 파일이 있습니다. 100MB 이하의 파일을 업로드 해주세요!');
+                    if (!memorySize) {
+                        fileArr=null;
+                        console.log(measurement);
+                        console.log(memorySize);
+                        throw new Error('5MB 이상의 파일이 있습니다. 5MB 이하의 파일을 업로드 해주세요!');
+                    }else{
+                        let data = { name: name, size: memorySize, type: type.split('/')[1], key: `${Date.now()}_${idx}` };
+                        return new Promise(resolve => {
+                            let fileReader = new FileReader();
+                            fileReader.readAsDataURL(ele);
+                            fileReader.onload = async (e) => {
+                                const url = e.target.result;
+                                resolve({ ...data, url ,file:ele});
+                            }
+                        })
                     }
-                    let data = { name: name, size: memorySize, type: type.split('/')[1], key: `${Date.now()}_${idx}` };
-                    return new Promise(resolve => {
-                        let fileReader = new FileReader();
-                        fileReader.readAsDataURL(ele);
-                        fileReader.onload = async (e) => {
-                            const url = e.target.result;
-                            resolve({ ...data, url ,file:ele});
-                        }
-                    })
+                    
                 }));
             } catch (error) {
                 console.error(error);
@@ -179,7 +187,7 @@ const UploadMusicInput = observer(() => {
                             Drag Your File Here
                         </p>
                         <p className="available-file-type-text">
-                            mp3,&nbsp; wav, MAX 100MB
+                            mp3,&nbsp; wav, MAX 5MB
                         </p>
                     </div>
                     <div className='label-box'>

@@ -5,7 +5,7 @@ import {useCookies} from 'react-cookie';
 import { COOKIE_USER_KEY, USER_KEY } from '../../../react-query/keys';
 import LoadingComponent from '../../LoadingComponent';
 import {LOG_IN} from '../../../constant/PagePath';
-//import LogOutQuery from '../../../react-query/logout';
+import LogOutQuery from '../../../react-query/logout';
 
 const LogInAOC = (ChildComponent)=>{
     function RenderComponentFunc(){
@@ -20,8 +20,7 @@ const LogInAOC = (ChildComponent)=>{
         const [cookies,,] = useCookies([COOKIE_USER_KEY]);
         const {pathname} = useLocation();
         const navigate = useNavigate();
-        //const {mutate:logOutMutate} = LogOutQuery();
-
+        const {mutate:LogOutMutate} = LogOutQuery();
         useEffect(()=>{
             const loadingFlag = loadingUserData || fetchingUserData;
             if(!loadingFlag){
@@ -34,6 +33,9 @@ const LogInAOC = (ChildComponent)=>{
                     if(UserData&&cookies.UserData){
                         pathname===`/${LOG_IN}`?setAOCState(1):setAOCState(2);
                     }else {
+                        if(pathname!==`/${LOG_IN}`){
+                            LogOutMutate();
+                        }
                         pathname===`/${LOG_IN}`?setAOCState(2):setAOCState(1);
                     }
                 }
